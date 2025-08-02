@@ -56,4 +56,20 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Adaptive layout
+    implementation(libs.androidx.material3.window.size.class1)
+    // compose navigation
+    implementation(libs.androidx.navigation.compose)
+    // Koin
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.android)
+    // Kotzilla
+    implementation(libs.kotzilla.sdk)
+    // Kotlin Serialization
+    implementation(libs.kotlinx.serialization.json)
+    // Timber
+    implementation(libs.timber)
+    // Splash
+    implementation(libs.core.splashscreen)
 }

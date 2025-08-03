@@ -1,4 +1,4 @@
-package com.seenu.dev.android.qrscanner.presentation
+package com.seenu.dev.android.qr_craft.presentation
 
 sealed interface UiState<T> {
 

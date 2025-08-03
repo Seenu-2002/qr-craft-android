@@ -1,4 +1,4 @@
-package com.seenu.dev.android.qrscanner.presentation.ui.theme
+package com.seenu.dev.android.qr_craft.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

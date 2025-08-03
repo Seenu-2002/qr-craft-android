@@ -1,18 +1,18 @@
-package com.seenu.dev.android.qrscanner
+package com.seenu.dev.android.qr_craft
 
 import android.app.Application
 import io.kotzilla.sdk.analytics.koin.analytics
 import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import org.koin.core.logger.Level
+import timber.log.Timber
 
-class QRScannerApplication : Application() {
+class QrCraftApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Timber.plant(Timber.DebugTree())
         startKoin {
-            androidContext(this@QRScannerApplication)
+            androidContext(this@QrCraftApplication)
             analytics()
             modules()
         }

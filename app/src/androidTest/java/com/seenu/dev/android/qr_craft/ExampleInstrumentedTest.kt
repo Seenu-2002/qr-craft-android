@@ -1,4 +1,4 @@
-package com.seenu.dev.android.qrscanner
+package com.seenu.dev.android.qr_craft
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.seenu.dev.android.qrscanner", appContext.packageName)
+        assertEquals("com.seenu.dev.android.qr_craft", appContext.packageName)
     }
 }

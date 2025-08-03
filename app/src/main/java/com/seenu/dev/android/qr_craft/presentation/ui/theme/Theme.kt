@@ -1,4 +1,4 @@
-package com.seenu.dev.android.qrscanner.presentation.ui.theme
+package com.seenu.dev.android.qr_craft.presentation.ui.theme
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -65,7 +65,7 @@ val ColorScheme.wifiBg: Color
     get() = WifiBg
 
 @Composable
-fun QRScannerTheme(
+fun QrCraftTheme(
     content: @Composable () -> Unit
 ) {
     MaterialTheme(

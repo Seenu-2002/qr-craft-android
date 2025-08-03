@@ -1,4 +1,4 @@
-package com.seenu.dev.android.qrscanner.presentation.splash
+package com.seenu.dev.android.qr_craft.presentation.splash
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

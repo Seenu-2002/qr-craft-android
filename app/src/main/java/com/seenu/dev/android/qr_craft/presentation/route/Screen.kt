@@ -1,5 +1,6 @@
 package com.seenu.dev.android.qr_craft.presentation.route
 
+import com.seenu.dev.android.qr_craft.presentation.state.QrData
 import kotlinx.serialization.Serializable
 
 @Serializable

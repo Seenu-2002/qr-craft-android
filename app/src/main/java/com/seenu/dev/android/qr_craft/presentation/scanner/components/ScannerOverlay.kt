@@ -32,7 +32,7 @@ import com.seenu.dev.android.qr_craft.presentation.ui.theme.onOverlay
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.overlay
 
 @Composable
-fun ScannerOverlay(modifier: Modifier = Modifier) {
+fun ScannerOverlay(modifier: Modifier = Modifier, showCameraBounds: Boolean = true) {
     var size by remember {
         mutableStateOf(IntSize.Zero)
     }
@@ -53,6 +53,17 @@ fun ScannerOverlay(modifier: Modifier = Modifier) {
                 size = it.size
             }
             .drawWithCache {
+
+                if (!showCameraBounds) {
+                    return@drawWithCache onDrawBehind {
+                        this.drawRect(
+                            color = overlayColor,
+                            topLeft = Offset.Zero,
+                            size = this.size
+                        )
+                    }
+                }
+
                 val squareSize = minOf(size.width, size.height) - 48.dp.toPx()
                 squareOffset = Offset(
                     (size.width - squareSize) / 2F,

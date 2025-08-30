@@ -1,18 +1,13 @@
 package com.seenu.dev.android.qr_craft.presentation.scanner
 
-import android.R.attr.bitmap
-import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.seenu.dev.android.qr_craft.domain.model.QrData
 import com.seenu.dev.android.qr_craft.presentation.UiState
-import com.seenu.dev.android.qr_craft.presentation.state.QrData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
@@ -30,11 +25,11 @@ class QrScannerViewModel : ViewModel(), KoinComponent {
             val data = when {
                 // http://https://pl-coding.mymemberspot.io
                 rawValue.startsWith("http://") -> {
-                    QrData.Url(rawValue.drop(7).trim(), rawValue = rawValue)
+                    QrData.Url(rawValue.drop(7).trim())
                 }
 
                 rawValue.startsWith("https://") -> {
-                    QrData.Url(rawValue.drop(8).trim(), rawValue = rawValue)
+                    QrData.Url(rawValue.drop(8).trim())
                 }
 
                 rawValue.startsWith("BEGIN:VCARD") -> {
@@ -47,7 +42,7 @@ class QrScannerViewModel : ViewModel(), KoinComponent {
 
                 // tel:+49 170 1234567
                 rawValue.startsWith("TEL", ignoreCase = true) -> {
-                    QrData.PhoneNumber(rawValue.drop(4).trim(), rawValue)
+                    QrData.Phone(rawValue.drop(4).trim())
                 }
 
                 rawValue.startsWith("GEO:", ignoreCase = true) -> {
@@ -59,7 +54,7 @@ class QrScannerViewModel : ViewModel(), KoinComponent {
                 // - Finalize QR saving logic
                 // - Test gallery import feature
                 else -> {
-                    QrData.Text(rawValue,  rawValue = rawValue)
+                    QrData.Text(rawValue)
                 }
             }
             delay(500L)
@@ -74,14 +69,14 @@ class QrScannerViewModel : ViewModel(), KoinComponent {
             val latitude = coordinates[0].toDoubleOrNull()
             val longitude = coordinates[1].toDoubleOrNull()
             if (latitude != null && longitude != null) {
-                QrData.GeoLocation(latitude, longitude, rawValue)
+                QrData.GeoLocation(latitude, longitude)
             } else {
                 Timber.e("Invalid GEO format: $rawValue")
-                QrData.Text(rawValue, rawValue)
+                QrData.Text(rawValue)
             }
         } else {
             Timber.e("Invalid GEO format: $rawValue")
-            QrData.Text(rawValue, rawValue)
+            QrData.Text(rawValue)
         }
     }
 
@@ -118,12 +113,11 @@ class QrScannerViewModel : ViewModel(), KoinComponent {
             QrData.Contact(
                 name = name,
                 phone = phone ?: "",
-                email = email ?: "",
-                rawValue
+                email = email ?: ""
             )
         } else {
             Timber.e("Invalid vCard format: $rawValue")
-            QrData.Text(rawValue, rawValue)
+            QrData.Text(rawValue)
         }
     }
 
@@ -153,8 +147,7 @@ class QrScannerViewModel : ViewModel(), KoinComponent {
         return QrData.Wifi(
             ssid = ssid ?: "Unknown SSID",
             password = password ?: "No password",
-            encryptionType = encryptionType ?: "No encryption",
-            rawValue
+            encryptionType = encryptionType ?: "No encryption"
         )
     }
 

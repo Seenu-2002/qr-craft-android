@@ -1,9 +1,7 @@
 package com.seenu.dev.android.qr_craft.presentation.scanner
 
 import android.Manifest
-import android.R.attr.text
 import android.content.pm.PackageManager
-import android.graphics.RectF
 import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -15,7 +13,6 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,11 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.toComposeRect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -58,12 +50,12 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.seenu.dev.android.qr_craft.R
+import com.seenu.dev.android.qr_craft.domain.model.QrData
 import com.seenu.dev.android.qr_craft.presentation.UiState
-import com.seenu.dev.android.qr_craft.presentation.common.QrDetailsViewModel
 import com.seenu.dev.android.qr_craft.presentation.common.components.CustomSnackBar
 import com.seenu.dev.android.qr_craft.presentation.common.components.PermissionDialog
 import com.seenu.dev.android.qr_craft.presentation.common.components.PermissionTextProvider
-import com.seenu.dev.android.qr_craft.presentation.common.components.openAppSettings
+import com.seenu.dev.android.qr_craft.presentation.common.openAppSettings
 import com.seenu.dev.android.qr_craft.presentation.misc.QRCodeAnalyzer
 import com.seenu.dev.android.qr_craft.presentation.scanner.components.ScannerOverlay
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.onOverlay
@@ -76,8 +68,7 @@ import timber.log.Timber
 @OptIn(ExperimentalGetImage::class)
 @Composable
 fun QrScannerScreen(
-    qrDetailsViewModel: QrDetailsViewModel,
-    openQrDetailsScreen: () -> Unit,
+    openQrDetailsScreen: (data: QrData) -> Unit,
     onCloseApp: () -> Unit
 ) {
 
@@ -95,8 +86,7 @@ fun QrScannerScreen(
         viewModel.qrData.collectLatest {
             if (it is UiState.Success) {
                 Timber.d("QR Data received: ${it.data}")
-                qrDetailsViewModel.setQrData(it.data)
-                openQrDetailsScreen()
+                openQrDetailsScreen(it.data)
             }
         }
     }
@@ -132,8 +122,6 @@ fun QrScannerScreen(
             if (!isCameraPermissionGranted) {
                 return@Box
             }
-
-            HideNavAndStatusBar()
 
             val lifecycleOwner = LocalLifecycleOwner.current
             val context = LocalContext.current
@@ -227,32 +215,6 @@ fun QrScannerScreen(
                         modifier = Modifier.padding(top = 8.dp)
                     )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun HideNavAndStatusBar() {
-    val activity = LocalActivity.current
-
-    DisposableEffect(Unit) {
-        val window = activity?.window
-            ?: return@DisposableEffect onDispose {}
-        val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-
-        with(insetsController) {
-            hide(WindowInsetsCompat.Type.statusBars())
-            hide(WindowInsetsCompat.Type.navigationBars())
-            systemBarsBehavior =
-                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
-
-        onDispose {
-            with(insetsController) {
-                show(WindowInsetsCompat.Type.statusBars())
-                show(WindowInsetsCompat.Type.navigationBars())
-                systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
             }
         }
     }

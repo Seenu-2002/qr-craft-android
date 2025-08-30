@@ -10,15 +10,40 @@
     <string name="scan_result">Scan Result</string>
     <string name="invalid_qr_message">Invalid QR Data. Please Scan again.</string>
     <string name="title_geo">Geolocation</string>
+    <string name="title_latitude">Latitude</string>
+    <string name="title_longitude">Longitude</string>
     <string name="title_text">Text</string>
-    <string name="title_wifi">Wi-Fi Network</string>
+    <string name="title_wifi_network">Wi-Fi Network</string>
+    <string name="title_wifi">Wi-Fi</string>
+    <string name="title_ssid">SSID</string>
+    <string name="title_password">Password</string>
+    <string name="title_encryption_type">Encryption Type</string>
     <string name="title_contact">Contact</string>
+    <string name="title_name">Name</string>
+    <string name="title_email">Email</string>
     <string name="title_link">Link</string>
+    <string name="title_url">URL</string>
     <string name="title_phone">Phone Number</string>
     <string name="action_copy">Copy</string>
     <string name="action_share">Share</string>
     <string name="error_camera">Unable to connect to the Camera.</string>
     <string name="error_qr_processing">Unable to parse QR. Try again</string>
     <string name="loading">Loading</string>
+    <string name="create_qr">Create QR</string>
+    <string name="generate_qr">Generate QR-Code</string>
+    <string name="preview">Preview</string>
+    <string name="error_email">Please enter a valid email</string>
+    <string name="error_url">Please enter a valid URL</string>
+    <string name="error_phone">Please enter a valid phone number</string>
+    <string name="error_latitude">Please enter a valid latitude</string>
+    <string name="error_longitude">Please enter a valid longitude</string>
+    <string name="error_encryption_type">Please select an encryption type. (Allowed types: WEP, WPA, WPA2-EAP, nopass)</string>
+    <string name="data_copied">QR data has been copied to clipboard!</string>
+
+    <!--    Accessibility strings-->
+    <string name="access_scan_history">Scan History</string>
+    <string name="access_qr_scanner">QR Scanner</string>
+    <string name="access_qr_create">Create QR Code</string>
+    <string name="access_back">Back</string>
 
 </resources>

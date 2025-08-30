@@ -19,6 +19,9 @@ val ColorScheme.surfaceHigher: Color
 val ColorScheme.onSurfaceAlt: Color
     get() = OnSurfaceAlt
 
+val ColorScheme.onSurfaceDisabled: Color
+    get() = OnSurfaceDisabled
+
 val ColorScheme.overlay: Color
     get() = Overlay
 

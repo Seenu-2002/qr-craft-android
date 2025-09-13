@@ -7,12 +7,18 @@ import androidx.compose.ui.res.stringResource
 import com.seenu.dev.android.qr_craft.R
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.contact
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.contactBg
+import com.seenu.dev.android.qr_craft.presentation.ui.theme.geo
+import com.seenu.dev.android.qr_craft.presentation.ui.theme.geoBg
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.link
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.linkBg
+import com.seenu.dev.android.qr_craft.presentation.ui.theme.phone
+import com.seenu.dev.android.qr_craft.presentation.ui.theme.phoneBg
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.text
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.textBg
+import com.seenu.dev.android.qr_craft.presentation.ui.theme.wifi
+import com.seenu.dev.android.qr_craft.presentation.ui.theme.wifiBg
 
-data class QrTypeItem(
+data class QrTypeItem constructor(
     val type: QrType,
     val title: String,
     val tint: Color,
@@ -24,49 +30,51 @@ enum class QrType {
     TEXT, LINK, CONTACT, PHONE, GEO_LOCATION, WIFI
 }
 
-val items: List<QrTypeItem>
+
+// TODO: Should not cache this data as it retain during config changes
+val items: Map<QrType, QrTypeItem>
     @Composable
-    get() = listOf(
-        QrTypeItem(
+    get() = mapOf(
+        QrType.TEXT to QrTypeItem(
             type = QrType.TEXT,
             title = stringResource(R.string.title_text),
             tint = MaterialTheme.colorScheme.text,
             backgroundColor = MaterialTheme.colorScheme.textBg,
             iconRes = R.drawable.ic_text
         ),
-        QrTypeItem(
+        QrType.LINK to QrTypeItem(
             type = QrType.LINK,
             title = stringResource(R.string.title_link),
             tint = MaterialTheme.colorScheme.link,
             backgroundColor = MaterialTheme.colorScheme.linkBg,
             iconRes = R.drawable.ic_link
         ),
-        QrTypeItem(
+        QrType.CONTACT to QrTypeItem(
             type = QrType.CONTACT,
             title = stringResource(R.string.title_contact),
             tint = MaterialTheme.colorScheme.contact,
             backgroundColor = MaterialTheme.colorScheme.contactBg,
             iconRes = R.drawable.ic_user
         ),
-        QrTypeItem(
+        QrType.PHONE to QrTypeItem(
             type = QrType.PHONE,
             title = stringResource(R.string.title_phone),
-            tint = MaterialTheme.colorScheme.link,
-            backgroundColor = MaterialTheme.colorScheme.linkBg,
+            tint = MaterialTheme.colorScheme.phone,
+            backgroundColor = MaterialTheme.colorScheme.phoneBg,
             iconRes = R.drawable.ic_phone
         ),
-        QrTypeItem(
+        QrType.GEO_LOCATION to QrTypeItem(
             type = QrType.GEO_LOCATION,
             title = stringResource(R.string.title_geo),
-            tint = MaterialTheme.colorScheme.link,
-            backgroundColor = MaterialTheme.colorScheme.linkBg,
+            tint = MaterialTheme.colorScheme.geo,
+            backgroundColor = MaterialTheme.colorScheme.geoBg,
             iconRes = R.drawable.ic_marker_pin
         ),
-        QrTypeItem(
+        QrType.WIFI to QrTypeItem(
             type = QrType.WIFI,
             title = stringResource(R.string.title_wifi),
-            tint = MaterialTheme.colorScheme.link,
-            backgroundColor = MaterialTheme.colorScheme.linkBg,
+            tint = MaterialTheme.colorScheme.wifi,
+            backgroundColor = MaterialTheme.colorScheme.wifiBg,
             iconRes = R.drawable.ic_wifi
         )
     )

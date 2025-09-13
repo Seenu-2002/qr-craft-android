@@ -74,7 +74,7 @@ fun ChooseQrTypeScreen(openQrCreateScreen: (QrType) -> Unit = {}) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(qrTypeItems) { item ->
+            items(qrTypeItems.values.toList()) { item ->
                 QrTypeItem(modifier = Modifier.clickable {
                     openQrCreateScreen(item.type)
                 }, data = item)

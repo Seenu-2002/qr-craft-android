@@ -26,6 +26,7 @@
     <string name="title_phone">Phone Number</string>
     <string name="action_copy">Copy</string>
     <string name="action_share">Share</string>
+    <string name="action_delete">Delete</string>
     <string name="error_camera">Unable to connect to the Camera.</string>
     <string name="error_qr_processing">Unable to parse QR. Try again</string>
     <string name="loading">Loading</string>
@@ -39,6 +40,15 @@
     <string name="error_longitude">Please enter a valid longitude</string>
     <string name="error_encryption_type">Please select an encryption type. (Allowed types: WEP, WPA, WPA2-EAP, nopass)</string>
     <string name="data_copied">QR data has been copied to clipboard!</string>
+    <string name="scan_history">Scan History</string>
+    <string name="scanned">Scanned</string>
+    <string name="generated">Generated</string>
+
+    <string name="error_create_qr">Unable to create QR.</string>
+    <string name="no_history">History is empty.</string>
+    <string name="error_fetching_history">Unable to fetch QR history.</string>
+    <string name="item_deleted_success">Selected Item has been deleted.</string>
+    <string name="item_deleted_error">Unable to delete the selected item.</string>
 
     <!--    Accessibility strings-->
     <string name="access_scan_history">Scan History</string>

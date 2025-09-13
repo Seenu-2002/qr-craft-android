@@ -1,9 +1,12 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     id("kotlin-parcelize")
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -67,8 +70,6 @@ dependencies {
     // Koin
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.android)
-    // Kotzilla
-    implementation(libs.kotzilla.sdk)
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
     // Timber
@@ -85,4 +86,9 @@ dependencies {
     implementation(libs.camera.view)
     // ZXing
     implementation(libs.zxing.android.embedded)
+    // Room db
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    // date-time
+    implementation(libs.kotlinx.datetime.jvm)
 }

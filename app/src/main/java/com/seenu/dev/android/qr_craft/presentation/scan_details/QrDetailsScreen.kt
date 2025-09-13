@@ -1,7 +1,5 @@
 package com.seenu.dev.android.qr_craft.presentation.scan_details
 
-import android.content.ClipData
-import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,49 +11,56 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.ClipEntry
-import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.seenu.dev.android.qr_craft.R
-import com.seenu.dev.android.qr_craft.domain.model.QrData
+import com.seenu.dev.android.qr_craft.presentation.UiState
+import com.seenu.dev.android.qr_craft.presentation.mapper.toUiModel
+import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
 import com.seenu.dev.android.qr_craft.presentation.misc.QrGenerator
 import com.seenu.dev.android.qr_craft.presentation.scan_details.components.QrDetailsContent
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.onOverlay
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.surfaceHigher
-import androidx.core.net.toUri
-import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QrScanDetailsScreen(
+fun QrDetailsScreen(
     isPreview: Boolean,
-    qrData: QrData,
-    onCopyData: (data: QrData) -> Unit = {},
-    onShareData: (data: QrData) -> Unit = {},
+    id: Long,
+    onCopyData: (data: QrDataUiModel) -> Unit = {},
+    onShareData: (data: QrDataUiModel) -> Unit = {},
     onBackPressed: () -> Unit = {}
 ) {
+
+    val viewModel: QrDetailViewModel = koinViewModel()
+
+    val qrDataState by viewModel.qrData.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        if (qrDataState is UiState.Empty) {
+            viewModel.getQrData(id)
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -98,41 +103,71 @@ fun QrScanDetailsScreen(
                 .padding(horizontal = 8.dp),
             contentAlignment = Alignment.Center
         ) {
-            Spacer(modifier = Modifier.height(48.dp))
-            Box(
-                modifier = Modifier
-                    .size(160.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceHigher,
-                        shape = MaterialTheme.shapes.small
-                    )
-                    .zIndex(1F),
-                contentAlignment = Alignment.Center
-            ) {
-                val size = with(LocalDensity.current) {
-                    144.dp.roundToPx()
+            when (val state = qrDataState) {
+                is UiState.Empty, is UiState.Loading -> {
+                    CircularProgressIndicator()
                 }
-                Image(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(4.dp),
-                    bitmap = QrGenerator.generate(
-                        qrData.rawValue,
-                        size
-                    )?.asImageBitmap()!!,
-                    contentDescription = "Qr Image"
-                )
-            }
 
-            QrDetailsContent(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = 140.dp),
-                contentTopPadding = 82.dp,
-                qrData = qrData,
-                onCopy = onCopyData,
-                onShare = onShareData
-            )
+                is UiState.Success -> {
+                    QrDetailSuccessContent(
+                        qrData = state.data.toUiModel(),
+                        onCopyData = onCopyData,
+                        onShareData = onShareData
+                    )
+                }
+
+                is UiState.Error -> {
+                    Text(
+                        text = state.message ?: "Unknown Error",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         }
     }
+}
+
+@Composable
+fun QrDetailSuccessContent(
+    modifier: Modifier = Modifier,
+    qrData: QrDataUiModel,
+    onCopyData: (data: QrDataUiModel) -> Unit,
+    onShareData: (data: QrDataUiModel) -> Unit
+) {
+    Spacer(modifier = Modifier.height(48.dp))
+    Box(
+        modifier = modifier
+            .size(160.dp)
+            .background(
+                color = MaterialTheme.colorScheme.surfaceHigher,
+                shape = MaterialTheme.shapes.small
+            )
+            .zIndex(1F),
+        contentAlignment = Alignment.Center
+    ) {
+        val size = with(LocalDensity.current) {
+            144.dp.roundToPx()
+        }
+        Image(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp),
+            bitmap = QrGenerator.generate(
+                qrData.data.rawValue,
+                size
+            )?.asImageBitmap()!!,
+            contentDescription = "Qr Image"
+        )
+    }
+
+    QrDetailsContent(
+        modifier = Modifier
+            .fillMaxWidth()
+            .offset(y = 140.dp),
+        contentTopPadding = 82.dp,
+        qrData = qrData,
+        onCopy = onCopyData,
+        onShare = onShareData
+    )
 }

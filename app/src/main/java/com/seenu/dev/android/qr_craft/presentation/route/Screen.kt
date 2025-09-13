@@ -17,4 +17,7 @@ sealed class Screen constructor(val route: String) {
     @Serializable
     data object CreateQr : Screen(route = "create_qr")
 
+    @Serializable
+    data object QrHistory : Screen(route = "qr_history")
+
 }

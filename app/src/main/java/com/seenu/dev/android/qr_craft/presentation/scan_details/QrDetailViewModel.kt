@@ -1,4 +1,4 @@
-package com.seenu.dev.android.qr_craft.presentation.create
+package com.seenu.dev.android.qr_craft.presentation.scan_details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,34 +10,28 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
-class CreateQrViewModel constructor(
+class QrDetailViewModel constructor(
     private val qrRepository: QrRepository
 ) : ViewModel(), KoinComponent {
 
     private val _qrData: MutableStateFlow<UiState<QrData>> = MutableStateFlow(UiState.Empty())
     val qrData: StateFlow<UiState<QrData>> = _qrData.asStateFlow()
 
-    @OptIn(ExperimentalTime::class)
-    fun insertQrData(data: String) {
+    fun getQrData(id: Long) {
         viewModelScope.launch {
             _qrData.value = UiState.Loading()
             try {
-                val qrData = QrData(
-                    id = 0L,
-                    customTitle = null,
-                    createdAt = Clock.System.now(),
-                    lastUpdatedAt = Clock.System.now(),
-                    isScanned = false,
-                    data = data,
-                )
-                val id = qrRepository.insertQrData(qrData)
-                _qrData.value = UiState.Success(qrData.copy(id = id))
+                val data = qrRepository.getQrData(id)
+                if (data == null) {
+                    _qrData.value = UiState.Empty("INVALID_ID")
+                } else {
+                    _qrData.value = UiState.Success(data)
+                }
             } catch (e: Exception) {
                 _qrData.value = UiState.Error(e.message)
             }
+
         }
     }
 

@@ -35,4 +35,10 @@ class QrDetailViewModel constructor(
         }
     }
 
+    fun updateTitle(id: Long, title: String) {
+        viewModelScope.launch {
+            qrRepository.updateQrTitle(title, id)
+        }
+    }
+
 }

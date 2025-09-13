@@ -1,5 +1,6 @@
 package com.seenu.dev.android.qr_craft.presentation.scan_details
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -56,10 +60,28 @@ fun QrDetailsScreen(
 
     val qrDataState by viewModel.qrData.collectAsStateWithLifecycle()
 
+    var title: String? by remember {
+        mutableStateOf(null)
+    }
+
     LaunchedEffect(Unit) {
         if (qrDataState is UiState.Empty) {
             viewModel.getQrData(id)
         }
+    }
+
+    fun saveTitle() {
+        if (qrDataState is UiState.Success) {
+            val data = (qrDataState as UiState.Success).data
+            if (data.customTitle != title && !title.isNullOrBlank()) {
+                viewModel.updateTitle(data.id, title!!.trim())
+            }
+        }
+    }
+
+    BackHandler {
+        saveTitle()
+        onBackPressed()
     }
 
     Scaffold(
@@ -68,7 +90,10 @@ fun QrDetailsScreen(
             CenterAlignedTopAppBar(
                 navigationIcon = {
                     IconButton(
-                        onClick = onBackPressed
+                        onClick = {
+                            saveTitle()
+                            onBackPressed()
+                        }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_left),
@@ -109,8 +134,21 @@ fun QrDetailsScreen(
                 }
 
                 is UiState.Success -> {
+                    val uiModel = state.data.toUiModel()
+                    LaunchedEffect(uiModel.customTitle) {
+                        title = uiModel.customTitle
+                    }
                     QrDetailSuccessContent(
-                        qrData = state.data.toUiModel(),
+                        qrData = uiModel,
+                        title = title,
+                        onTitleChange = { newTitle ->
+                            val oldTitle = title
+                            if (newTitle.length < (oldTitle?.length ?: 0)) {
+                                title = newTitle
+                            } else if ((oldTitle?.length ?: 0) <= 32) {
+                                title = newTitle
+                            }
+                        },
                         onCopyData = onCopyData,
                         onShareData = onShareData
                     )
@@ -132,6 +170,8 @@ fun QrDetailsScreen(
 fun QrDetailSuccessContent(
     modifier: Modifier = Modifier,
     qrData: QrDataUiModel,
+    title: String?,
+    onTitleChange: (String) -> Unit,
     onCopyData: (data: QrDataUiModel) -> Unit,
     onShareData: (data: QrDataUiModel) -> Unit
 ) {
@@ -167,6 +207,8 @@ fun QrDetailSuccessContent(
             .offset(y = 140.dp),
         contentTopPadding = 82.dp,
         qrData = qrData,
+        title = title,
+        onTitleChange = onTitleChange,
         onCopy = onCopyData,
         onShare = onShareData
     )

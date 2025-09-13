@@ -6,6 +6,7 @@ import com.seenu.dev.android.qr_craft.domain.model.QrData
 import com.seenu.dev.android.qr_craft.domain.repository.QrRepository
 import com.seenu.dev.android.qr_craft.presentation.UiState
 import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,8 +40,10 @@ class QrHistoryViewModel constructor(
         }
     }
 
+    private var historyJob: Job? = null
     private fun getScannedHistory(type: HistoryType) {
-        viewModelScope.launch {
+        historyJob?.cancel()
+        historyJob = viewModelScope.launch {
             _qrHistoryData.value = UiState.Loading()
             try {
                 qrRepository.getAllQrData(type == HistoryType.SCANNED).collectLatest {

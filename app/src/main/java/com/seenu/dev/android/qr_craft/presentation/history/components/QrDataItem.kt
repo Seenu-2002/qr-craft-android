@@ -67,7 +67,13 @@ fun QrDataItem(modifier: Modifier = Modifier, qrData: QrDataUiModel) {
                 .padding(horizontal = 12.dp)
         ) {
             Text(
-                text = qrData.customTitle ?: item.title,
+                text = qrData.customTitle.let {
+                    if (it.isNullOrBlank()) {
+                        item.title
+                    } else {
+                        it
+                    }
+                },
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurface
             )

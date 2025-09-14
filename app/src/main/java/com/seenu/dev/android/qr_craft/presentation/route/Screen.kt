@@ -1,15 +1,20 @@
 package com.seenu.dev.android.qr_craft.presentation.route
 
-import com.seenu.dev.android.qr_craft.presentation.state.QrData
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface Screen {
+sealed class Screen constructor(val route: String) {
 
     @Serializable
-    data object Scanner : Screen
+    data object Scanner : Screen(route = "scanner")
 
     @Serializable
-    data object ScanDetails : Screen
+    data object ScanDetails : Screen(route = "scan_details")
+
+    @Serializable
+    data object ChooseQrType : Screen(route = "choose_qr_type")
+
+    @Serializable
+    data object CreateQr : Screen(route = "create_qr")
 
 }

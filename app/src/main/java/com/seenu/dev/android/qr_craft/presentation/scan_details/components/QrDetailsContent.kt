@@ -1,6 +1,5 @@
 package com.seenu.dev.android.qr_craft.presentation.scan_details.components
 
-import android.R.attr.text
 import android.graphics.Bitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -24,7 +23,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.colorspace.ColorSpaces
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -37,18 +35,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.seenu.dev.android.qr_craft.R
-import com.seenu.dev.android.qr_craft.presentation.state.QrData
+import com.seenu.dev.android.qr_craft.domain.model.QrData
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.QrCraftTheme
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.surfaceHigher
-
-fun mockImageBitmap(width: Int = 100, height: Int = 100): Bitmap {
-    // Creates a solid-colored placeholder bitmap
-    val bitmap = ImageBitmap(width, height, ImageBitmapConfig.Argb8888, true)
-    val canvas = androidx.compose.ui.graphics.Canvas(bitmap)
-    val paint = Paint().apply { color = Color.Red }
-    canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
-    return bitmap.asAndroidBitmap()
-}
 
 object QrDataProvider : PreviewParameterProvider<QrData> {
     override val values: Sequence<QrData>
@@ -58,29 +47,23 @@ object QrDataProvider : PreviewParameterProvider<QrData> {
                         "- Review UI components\n" +
                         "- Finalize QR saving logic\n" +
                         "- Test gallery import feature",
-                ""
             ),
             QrData.Url(
                 "https://www.example.com",
-                ""
             ),
             QrData.Contact(
                 "John Doe", "+1234567890", "johndoe@yahoo.com",
-                ""
             ),
             QrData.GeoLocation(
                 37.7749, -122.4194,
-                ""
             ),
-            QrData.PhoneNumber(
+            QrData.Phone(
                 "+1234567890",
-                ""
             ),
             QrData.Wifi(
                 ssid = "MyWifiNetwork",
                 password = "securepassword",
                 encryptionType = "WPA",
-                ""
             )
         )
 }
@@ -98,7 +81,13 @@ private fun QrDetailsContentPreview(
 
 // TODO: Expandable text feature
 @Composable
-fun QrDetailsContent(qrData: QrData, contentTopPadding: Dp = 16.dp, modifier: Modifier = Modifier) {
+fun QrDetailsContent(
+    qrData: QrData,
+    modifier: Modifier = Modifier,
+    contentTopPadding: Dp = 16.dp,
+    onCopy: (data: QrData) -> Unit = {},
+    onShare: (data: QrData) -> Unit = {},
+) {
     Column(
         modifier = modifier
             .background(
@@ -121,9 +110,7 @@ fun QrDetailsContent(qrData: QrData, contentTopPadding: Dp = 16.dp, modifier: Mo
         if (qrData is QrData.Url) {
             val content = buildAnnotatedString {
                 withStyle(
-                    style = SpanStyle(color = MaterialTheme.colorScheme.primary),
-
-                    ) {
+                    style = SpanStyle(background = MaterialTheme.colorScheme.primary),) {
                     append(qrData.url)
                 }
             }
@@ -146,8 +133,9 @@ fun QrDetailsContent(qrData: QrData, contentTopPadding: Dp = 16.dp, modifier: Mo
         Row(modifier = Modifier.fillMaxWidth()) {
             Button(
                 onClick = {
-
-                }, modifier = Modifier
+                    onShare(qrData)
+                },
+                modifier = Modifier
                     .weight(1F)
                     .padding(horizontal = 8.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -170,7 +158,7 @@ fun QrDetailsContent(qrData: QrData, contentTopPadding: Dp = 16.dp, modifier: Mo
             }
             Button(
                 onClick = {
-
+                    onCopy(qrData)
                 }, modifier = Modifier
                     .weight(1F)
                     .padding(horizontal = 8.dp),
@@ -216,7 +204,7 @@ private fun QrData.toContentText(): String {
             """.trimIndent()
         }
 
-        is QrData.PhoneNumber -> this.phoneNumber
+        is QrData.Phone -> this.phoneNumber
         is QrData.Wifi -> {
             """
                 SSID: ${this.ssid}
@@ -233,7 +221,7 @@ private fun QrData.getTitleRes(): Int {
         is QrData.Url -> R.string.title_link
         is QrData.Contact -> R.string.title_contact
         is QrData.GeoLocation -> R.string.title_geo
-        is QrData.PhoneNumber -> R.string.title_phone
-        is QrData.Wifi -> R.string.title_wifi
+        is QrData.Phone -> R.string.title_phone
+        is QrData.Wifi -> R.string.title_wifi_network
     }
 }

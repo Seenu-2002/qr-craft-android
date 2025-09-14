@@ -64,7 +64,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Adaptive layout
-    implementation(libs.androidx.material3.window.size.class1)
+    implementation(libs.androidx.material3.window.size)
     // compose navigation
     implementation(libs.androidx.navigation.compose)
     // Koin

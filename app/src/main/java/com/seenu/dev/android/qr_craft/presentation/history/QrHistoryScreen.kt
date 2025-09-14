@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,22 +18,19 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontVariation.weight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.seenu.dev.android.qr_craft.R
 import com.seenu.dev.android.qr_craft.presentation.UiState
 import com.seenu.dev.android.qr_craft.presentation.common.components.SlidingSwitch
+import com.seenu.dev.android.qr_craft.presentation.design_system.LocalDimen
 import com.seenu.dev.android.qr_craft.presentation.history.components.QrDataItemList
 import com.seenu.dev.android.qr_craft.presentation.history.components.QrHistoryItemActionBottomSheet
 import com.seenu.dev.android.qr_craft.presentation.mapper.toUiModel
@@ -74,10 +72,12 @@ fun QrHistoryScreen(
         },
         containerColor = MaterialTheme.colorScheme.surface
     ) { innerPadding ->
+        val dimen = LocalDimen.current
         Box(modifier = Modifier.padding(innerPadding)) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val selected = remember(selectedOption) {
                     selectedOption.toOptionString(context)
@@ -88,7 +88,8 @@ fun QrHistoryScreen(
 
                 SlidingSwitch(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(12.dp),
                     selected = selected,
                     options = options
                 ) { index, _ ->
@@ -112,7 +113,13 @@ fun QrHistoryScreen(
                         val hapticFeedback = LocalHapticFeedback.current
                         QrDataItemList(
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .let {
+                                    if (dimen.qrHistoryPage.contentWidth == null) {
+                                        it.fillMaxSize()
+                                    } else {
+                                        it.width(dimen.qrHistoryPage.contentWidth)
+                                    }
+                                }
                                 .weight(1F)
                                 .padding(horizontal = 12.dp),
                             qrItems = state.data.map { it.toUiModel() },
@@ -148,6 +155,13 @@ fun QrHistoryScreen(
         if (itemLongPressed != null) {
             val sheetState = rememberModalBottomSheetState()
             QrHistoryItemActionBottomSheet(
+                modifier = Modifier.let {
+                    if (dimen.qrHistoryPage.bottomSheetWidth == null) {
+                        it
+                    } else {
+                        it.width(dimen.qrHistoryPage.bottomSheetWidth)
+                    }
+                },
                 sheetState = sheetState,
                 onDismissRequest = {
                     viewModel.clearItemLongPressed()

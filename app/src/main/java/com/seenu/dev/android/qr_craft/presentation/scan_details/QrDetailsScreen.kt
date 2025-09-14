@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,6 +39,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.seenu.dev.android.qr_craft.R
 import com.seenu.dev.android.qr_craft.presentation.UiState
+import com.seenu.dev.android.qr_craft.presentation.design_system.LocalDimen
 import com.seenu.dev.android.qr_craft.presentation.mapper.toUiModel
 import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
 import com.seenu.dev.android.qr_craft.presentation.misc.QrGenerator
@@ -123,11 +125,13 @@ fun QrDetailsScreen(
     ) { innerPadding ->
         Box(
             modifier = Modifier
+                .fillMaxWidth()
                 .wrapContentSize()
                 .padding(innerPadding)
                 .padding(horizontal = 8.dp),
             contentAlignment = Alignment.Center
         ) {
+            val dimen = LocalDimen.current
             when (val state = qrDataState) {
                 is UiState.Empty, is UiState.Loading -> {
                     CircularProgressIndicator()
@@ -139,6 +143,13 @@ fun QrDetailsScreen(
                         title = uiModel.customTitle
                     }
                     QrDetailSuccessContent(
+                        modifier = Modifier.let {
+                            if (dimen.scanDetailPage.cardWidth == null) {
+                                it.fillMaxWidth()
+                            } else {
+                                it.width(dimen.scanDetailPage.cardWidth)
+                            }
+                        },
                         qrData = uiModel,
                         title = title,
                         onTitleChange = { newTitle ->
@@ -177,7 +188,7 @@ fun QrDetailSuccessContent(
 ) {
     Spacer(modifier = Modifier.height(48.dp))
     Box(
-        modifier = modifier
+        modifier = Modifier
             .size(160.dp)
             .background(
                 color = MaterialTheme.colorScheme.surfaceHigher,
@@ -202,8 +213,7 @@ fun QrDetailSuccessContent(
     }
 
     QrDetailsContent(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .offset(y = 140.dp),
         contentTopPadding = 82.dp,
         qrData = qrData,

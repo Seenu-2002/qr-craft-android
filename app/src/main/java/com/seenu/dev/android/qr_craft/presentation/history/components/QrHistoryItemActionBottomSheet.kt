@@ -27,12 +27,14 @@ import com.seenu.dev.android.qr_craft.presentation.ui.theme.QrCraftTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QrHistoryItemActionBottomSheet(
+    modifier: Modifier = Modifier,
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
     onShare: () -> Unit,
     onDelete: () -> Unit
 ) {
     ModalBottomSheet(
+        modifier = modifier,
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         dragHandle = {}) {

@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">QR Scanner</string>
+
+    <string name="permission_camera_heading">Camera Required</string>
+    <string name="permission_camera_message">This app cannot function wit hout camera access. To scan QR codes, please grant permission.</string>
+    <string name="permission_btn_grant">Grant Access</string>
+    <string name="permission_btn_close_app">Close App</string>
+    <string name="permission_camera_granted">Camera permission granted</string>
+    <string name="point_your_camera_at_qr">Point your camera at a QR code</string>
+    <string name="scan_result">Scan Result</string>
+    <string name="invalid_qr_message">Invalid QR Data. Please Scan again.</string>
+    <string name="title_geo">Geolocation</string>
+    <string name="title_text">Text</string>
+    <string name="title_wifi">Wi-Fi Network</string>
+    <string name="title_contact">Contact</string>
+    <string name="title_link">Link</string>
+    <string name="title_phone">Phone Number</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_share">Share</string>
+    <string name="error_camera">Unable to connect to the Camera.</string>
+    <string name="error_qr_processing">Unable to parse QR. Try again</string>
+    <string name="loading">Loading</string>
+
 </resources>

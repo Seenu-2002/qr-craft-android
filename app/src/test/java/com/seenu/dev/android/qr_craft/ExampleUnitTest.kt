@@ -1,4 +1,4 @@
-package com.seenu.dev.android.qrscanner
+package com.seenu.dev.android.qr_craft
 
 import org.junit.Test
 

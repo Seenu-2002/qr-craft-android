@@ -2,14 +2,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    id("kotlin-parcelize")
 }
 
 android {
-    namespace = "com.seenu.dev.android.qrscanner"
+    namespace = "com.seenu.dev.android.qr_craft"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.seenu.dev.android.qrscanner"
+        applicationId = "com.seenu.dev.android.qr_craft"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -56,4 +58,30 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Adaptive layout
+    implementation(libs.androidx.material3.window.size.class1)
+    // compose navigation
+    implementation(libs.androidx.navigation.compose)
+    // Koin
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.android)
+    // Kotzilla
+    implementation(libs.kotzilla.sdk)
+    // Kotlin Serialization
+    implementation(libs.kotlinx.serialization.json)
+    // Timber
+    implementation(libs.timber)
+    // Splash
+    implementation(libs.core.splashscreen)
+    // ML Kit Barcode Scanning
+    implementation(libs.mlkit.barcode.scanning)
+    implementation(libs.camera.mlkit.vision)
+    // CameraX dependencies for camera integration
+    implementation(libs.androidx.camera.core)
+    implementation(libs.camera.camera2)
+    implementation(libs.camera.lifecycle)
+    implementation(libs.camera.view)
+    // ZXing
+    implementation(libs.zxing.android.embedded)
 }

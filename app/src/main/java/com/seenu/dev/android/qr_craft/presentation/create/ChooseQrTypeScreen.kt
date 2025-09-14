@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.seenu.dev.android.qr_craft.R
+import com.seenu.dev.android.qr_craft.presentation.design_system.LocalDimen
 import com.seenu.dev.android.qr_craft.presentation.state.QrType
 import com.seenu.dev.android.qr_craft.presentation.state.QrTypeItem
 import com.seenu.dev.android.qr_craft.presentation.state.items
@@ -64,17 +65,18 @@ fun ChooseQrTypeScreen(openQrCreateScreen: (QrType) -> Unit = {}) {
             )
         }, containerColor = MaterialTheme.colorScheme.surface
     ) { innerPadding ->
+        val dimen = LocalDimen.current
         val qrTypeItems = items
         LazyVerticalGrid(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding)
-                .padding(all = 8.dp),
-            columns = GridCells.Fixed(2),
+                .padding(all = dimen.createQrPage.contentHorizontalPadding),
+            columns = GridCells.Fixed(dimen.createQrPage.spanCount),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(qrTypeItems) { item ->
+            items(qrTypeItems.values.toList()) { item ->
                 QrTypeItem(modifier = Modifier.clickable {
                     openQrCreateScreen(item.type)
                 }, data = item)

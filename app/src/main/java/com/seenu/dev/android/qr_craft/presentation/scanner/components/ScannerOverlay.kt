@@ -64,7 +64,7 @@ fun ScannerOverlay(modifier: Modifier = Modifier, showCameraBounds: Boolean = tr
                     }
                 }
 
-                val squareSize = minOf(size.width, size.height) - 48.dp.toPx()
+                val squareSize = minOf(minOf(size.width, size.height), 320.dp.roundToPx()) - 48.dp.toPx()
                 squareOffset = Offset(
                     (size.width - squareSize) / 2F,
                     (size.height - squareSize) / 2F

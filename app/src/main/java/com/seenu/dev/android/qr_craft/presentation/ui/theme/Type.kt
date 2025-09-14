@@ -34,10 +34,28 @@ val Typography = Typography(
         fontSize = 16.sp,
         lineHeight = 20.sp
     ),
+    labelMedium = TextStyle(
+        fontFamily = Suse,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 16.sp
+    ),
     bodyLarge = TextStyle(
         fontFamily = Suse,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 20.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = Suse,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 16.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = Suse,
+        fontWeight = FontWeight.Normal,
+        fontSize = 11.sp,
+        lineHeight = 14.sp
     )
 )

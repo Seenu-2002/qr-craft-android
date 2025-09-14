@@ -42,15 +42,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.seenu.dev.android.qr_craft.R
-import com.seenu.dev.android.qr_craft.domain.model.QrData
+import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
 import com.seenu.dev.android.qr_craft.presentation.UiState
 import com.seenu.dev.android.qr_craft.presentation.common.components.CustomSnackBar
 import com.seenu.dev.android.qr_craft.presentation.common.components.PermissionDialog
@@ -68,7 +65,7 @@ import timber.log.Timber
 @OptIn(ExperimentalGetImage::class)
 @Composable
 fun QrScannerScreen(
-    openQrDetailsScreen: (data: QrData) -> Unit,
+    openQrDetailsScreen: (id: Long) -> Unit,
     onCloseApp: () -> Unit
 ) {
 
@@ -86,7 +83,7 @@ fun QrScannerScreen(
         viewModel.qrData.collectLatest {
             if (it is UiState.Success) {
                 Timber.d("QR Data received: ${it.data}")
-                openQrDetailsScreen(it.data)
+                openQrDetailsScreen(it.data.id)
             }
         }
     }
@@ -132,6 +129,7 @@ fun QrScannerScreen(
                 val listener = object : QRCodeAnalyzer.ProcessListener {
 
                     override fun onSuccess(qrData: String) {
+                        Timber.d("QR code processed successfully: $qrData")
                         viewModel.parseQrData(qrData)
                     }
 

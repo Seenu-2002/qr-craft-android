@@ -1,6 +1,5 @@
 package com.seenu.dev.android.qr_craft
 
-import android.R.attr.data
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
@@ -16,7 +15,10 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,161 +37,202 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.seenu.dev.android.qr_craft.domain.model.QrData
+import androidx.navigation.navArgument
+import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
 import com.seenu.dev.android.qr_craft.presentation.common.components.ScreenSlider
 import com.seenu.dev.android.qr_craft.presentation.common.components.ScreenSliderItem
 import com.seenu.dev.android.qr_craft.presentation.create.ChooseQrTypeScreen
 import com.seenu.dev.android.qr_craft.presentation.create.CreateQrScreen
+import com.seenu.dev.android.qr_craft.presentation.design_system.LocalDimen
+import com.seenu.dev.android.qr_craft.presentation.design_system.dimen600dp
+import com.seenu.dev.android.qr_craft.presentation.design_system.dimenMobilePortrait
+import com.seenu.dev.android.qr_craft.presentation.history.QrHistoryScreen
 import com.seenu.dev.android.qr_craft.presentation.route.Screen
-import com.seenu.dev.android.qr_craft.presentation.scan_details.QrScanDetailsScreen
+import com.seenu.dev.android.qr_craft.presentation.scan_details.QrDetailsScreen
 import com.seenu.dev.android.qr_craft.presentation.scanner.QrScannerScreen
 import com.seenu.dev.android.qr_craft.presentation.state.QrType
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.QrCraftTheme
-import kotlinx.coroutines.launch
-import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.json.Json
-import org.koin.androidx.viewmodel.ext.android.getViewModel
+import com.seenu.dev.android.qr_craft.presentation.util.DeviceConfiguration
+import com.seenu.dev.android.qr_craft.presentation.util.LocalDeviceConfiguration
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         enableEdgeToEdge()
         setContent {
             QrCraftTheme {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    val navController = rememberNavController()
-                    val currentScreen =
-                        navController.currentBackStackEntryAsState().value?.destination?.route
+                val activity = LocalActivity.current
+                val deviceConfiguration = if (activity != null) {
+                    val windowSize = calculateWindowSizeClass(activity)
+                    DeviceConfiguration.fromWindowSizeClass(windowSize)
+                } else {
+                    DeviceConfiguration.MOBILE_PORTRAIT
+                }
 
-                    val barVisibility = when (currentScreen) {
-                        Screen.Scanner.route -> BarVisibility.Hidden
-                        else -> BarVisibility.Visible
-                    }
-                    UpdateSystemBars(barVisibility)
+                CompositionLocalProvider(LocalDeviceConfiguration provides deviceConfiguration) {
 
-                    NavHost(
-                        navController = navController,
-                        startDestination = Screen.Scanner.route
-                    ) {
-                        composable(Screen.Scanner.route) {
-                            QrScannerScreen(
-                                openQrDetailsScreen = { data ->
-                                    val qrDatAsString = Json.encodeToString(data)
-                                    navController.navigate(
-                                        "${Screen.ScanDetails.route}/$qrDatAsString/false"
-                                    )
-                                }, onCloseApp = {
-                                    navController.popBackStack()
-                                })
+                    val dimen =
+                        if (LocalDeviceConfiguration.current == DeviceConfiguration.MOBILE_PORTRAIT) {
+                            dimenMobilePortrait
+                        } else {
+                            dimen600dp
                         }
+                    CompositionLocalProvider(LocalDimen provides dimen) {
 
-                        composable("${Screen.ScanDetails.route}/{data}/{isPreview}") { entry ->
-                            val isPreview =
-                                entry.arguments?.getString("isPreview")?.toBoolean() ?: false
-                            val data = entry.arguments?.getString("data")?.let {
-                                Json.decodeFromString<QrData>(it)
-                            } ?: throw IllegalStateException("No data found")
-                            ScreenContainer(showDarkIcons = false) {
-                                QrScanDetailsScreen(
-                                    isPreview = isPreview,
-                                    qrData = data,
-                                    onCopyData = {
-                                        copyDataToClipboard(it)
-                                    },
-                                    onShareData = {
-                                        shareData(it)
-                                    },
-                                    onBackPressed = {
-                                        navController.popBackStack()
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            val navController = rememberNavController()
+                            val currentScreen =
+                                navController.currentBackStackEntryAsState().value?.destination?.route
+
+                            val barVisibility = when (currentScreen) {
+                                Screen.Scanner.route -> BarVisibility.Hidden
+                                else -> BarVisibility.Visible
+                            }
+                            UpdateSystemBars(barVisibility)
+
+                            NavHost(
+                                navController = navController,
+                                startDestination = Screen.Scanner.route
+                            ) {
+                                composable(Screen.Scanner.route) {
+                                    QrScannerScreen(
+                                        openQrDetailsScreen = { id ->
+                                            navController.navigate("${Screen.ScanDetails.route}/$id/false")
+                                        }, onCloseApp = {
+                                            navController.popBackStack()
+                                        })
+                                }
+
+                                composable(
+                                    "${Screen.ScanDetails.route}/{id}/{isPreview}",
+                                    arguments = listOf(
+                                        navArgument("id") {
+                                            type = NavType.LongType
+                                        },
+                                        navArgument("isPreview") {
+                                            type = NavType.BoolType
+                                        }
+                                    )) { entry ->
+                                    val isPreview =
+                                        entry.arguments?.getBoolean("isPreview") ?: false
+                                    val id = entry.arguments?.getLong("id")!!
+                                    ScreenContainer(showDarkIcons = false) {
+                                        QrDetailsScreen(
+                                            isPreview = isPreview,
+                                            id = id,
+                                            onCopyData = {
+                                                copyDataToClipboard(it)
+                                            },
+                                            onShareData = {
+                                                shareData(it)
+                                            },
+                                            onBackPressed = {
+                                                navController.popBackStack()
+                                            }
+                                        )
                                     }
+                                }
+
+                                composable(Screen.ChooseQrType.route) {
+                                    ScreenContainer(showDarkIcons = true) {
+                                        ChooseQrTypeScreen(openQrCreateScreen = { type ->
+                                            navController.navigate("${Screen.CreateQr.route}/${type.name}")
+                                        })
+                                    }
+                                }
+
+                                composable("${Screen.CreateQr.route}/{type}") { entry ->
+                                    val type =
+                                        QrType.valueOf(
+                                            entry.arguments?.getString("type")!!.uppercase()
+                                        )
+                                    ScreenContainer(showDarkIcons = true) {
+                                        CreateQrScreen(type = type, onQrGenerated = { id ->
+                                            navController.navigate("${Screen.ScanDetails.route}/${id}/true") {
+                                                popUpTo("${Screen.CreateQr.route}/$type") {
+                                                    inclusive = true
+                                                }
+                                                launchSingleTop = true
+                                            }
+                                        }, onNavigateBack = {
+                                            navController.popBackStack()
+                                        })
+                                    }
+                                }
+
+                                composable(Screen.QrHistory.route) {
+                                    ScreenContainer(showDarkIcons = true) {
+                                        QrHistoryScreen(
+                                            openQrDetail = { id ->
+                                                navController.navigate("${Screen.ScanDetails.route}/$id/true")
+                                            },
+                                            onShareQr = { data ->
+                                                shareData(data)
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+
+                            val items = listOf(
+                                ScreenSliderItem(
+                                    icon = painterResource(id = R.drawable.ic_clock_refresh),
+                                    contentDescription = stringResource(R.string.access_scan_history)
+                                ),
+                                ScreenSliderItem(
+                                    icon = painterResource(id = R.drawable.ic_scan),
+                                    contentDescription = stringResource(R.string.access_qr_scanner)
+                                ),
+                                ScreenSliderItem(
+                                    icon = painterResource(id = R.drawable.ic_plus_circle),
+                                    contentDescription = stringResource(R.string.access_qr_create)
                                 )
-                            }
-                        }
+                            )
 
-                        composable(Screen.ChooseQrType.route) {
-                            ScreenContainer(showDarkIcons = true) {
-                                ChooseQrTypeScreen(openQrCreateScreen = { type ->
-                                    navController.navigate("${Screen.CreateQr.route}/${type.name}")
-                                })
+                            val showScreenSlider = when (currentScreen) {
+                                Screen.Scanner.route, Screen.ChooseQrType.route, Screen.QrHistory.route -> true
+                                else -> false
                             }
-                        }
+                            var selectedItem by remember { mutableStateOf(items[1]) }
+                            AnimatedVisibility(
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(bottom = 52.dp),
+                                visible = showScreenSlider,
+                                exit = slideOutVertically(
+                                    targetOffsetY = { fullHeight -> fullHeight },
+                                    animationSpec = tween(300)
+                                ), enter = slideInVertically(
+                                    initialOffsetY = { fullHeight -> fullHeight },
+                                    animationSpec = tween(durationMillis = 300)
+                                )
+                            ) {
+                                ScreenSlider(
+                                    items = items,
+                                    selectedItem = selectedItem
+                                ) { index, item ->
+                                    selectedItem = item
 
-                        composable("${Screen.CreateQr.route}/{type}") { entry ->
-                            val type =
-                                QrType.valueOf(entry.arguments?.getString("type")!!.uppercase())
-                            ScreenContainer(showDarkIcons = true) {
-                                CreateQrScreen(type = type, onGenerateQr = { data ->
-                                    val qrDataAsString = Json.encodeToString(data)
-                                    navController.navigate("${Screen.ScanDetails.route}/${qrDataAsString}/true") {
-                                        popUpTo("${Screen.CreateQr.route}/$type") {
+                                    val route = when (index) {
+                                        0 -> Screen.QrHistory.route
+                                        1 -> Screen.Scanner.route
+                                        2 -> Screen.ChooseQrType.route
+                                        else -> return@ScreenSlider
+                                    }
+                                    navController.navigate(route) {
+                                        popUpTo(0) {
                                             inclusive = true
                                         }
                                         launchSingleTop = true
                                     }
-                                }, onNavigateBack = {
-                                    navController.popBackStack()
-                                })
-                            }
-                        }
-                    }
-
-                    val items = listOf(
-                        ScreenSliderItem(
-                            icon = painterResource(id = R.drawable.ic_clock_refresh),
-                            contentDescription = stringResource(R.string.access_scan_history)
-                        ),
-                        ScreenSliderItem(
-                            icon = painterResource(id = R.drawable.ic_scan),
-                            contentDescription = stringResource(R.string.access_qr_scanner)
-                        ),
-                        ScreenSliderItem(
-                            icon = painterResource(id = R.drawable.ic_plus_circle),
-                            contentDescription = stringResource(R.string.access_qr_create)
-                        )
-                    )
-
-                    val showScreenSlider = when (currentScreen) {
-                        Screen.Scanner.route, Screen.ChooseQrType.route -> true
-                        else -> false
-                    }
-                    var selectedItem by remember { mutableStateOf(items[1]) }
-                    AnimatedVisibility(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 52.dp),
-                        visible = showScreenSlider,
-                        exit = slideOutVertically(
-                            targetOffsetY = { fullHeight -> fullHeight },
-                            animationSpec = tween(300)
-                        ), enter = slideInVertically(
-                            initialOffsetY = { fullHeight -> fullHeight },
-                            animationSpec = tween(durationMillis = 300)
-                        )
-                    ) {
-                        ScreenSlider(
-                            items = items,
-                            selectedItem = selectedItem
-                        ) { index, item ->
-                            if (index > 0) {
-                                selectedItem = item
-                            }
-
-                            val route = when (index) {
-                                1 -> Screen.Scanner.route
-                                2 -> Screen.ChooseQrType.route
-                                else -> return@ScreenSlider
-                            }
-                            navController.navigate(route) {
-                                popUpTo(0) {
-                                    inclusive = true
                                 }
-                                launchSingleTop = true
                             }
                         }
                     }
@@ -198,19 +241,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun copyDataToClipboard(qrData: QrData) {
-        val data = when (qrData) {
-            is QrData.Url -> {
+    private fun copyDataToClipboard(qrData: QrDataUiModel) {
+        val data = when (qrData.data) {
+            is QrDataUiModel.Data.Url -> {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
-                    qrData.url.toUri()
+                    qrData.data.url.toUri()
                 )
                 ClipData.newIntent("open_url", intent)
             }
 
             else -> {
                 ClipData.newPlainText(
-                    "qr_data", qrData.rawValue
+                    "qr_data", qrData.data.rawValue
                 )
             }
         }
@@ -219,10 +262,10 @@ class MainActivity : ComponentActivity() {
         clipBoardManager?.setPrimaryClip(data)
     }
 
-    private fun shareData(data: QrData) {
+    private fun shareData(data: QrDataUiModel) {
         val intent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, data.rawValue)
+            putExtra(Intent.EXTRA_TEXT, data.data.rawValue)
             type = "text/plain"
         }
         val shareIntent = Intent.createChooser(intent, null)

@@ -1,6 +1,5 @@
 package com.seenu.dev.android.qr_craft.presentation.create.components
 
-import android.R.attr.data
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,7 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.seenu.dev.android.qr_craft.R
-import com.seenu.dev.android.qr_craft.domain.model.QrData
+import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
 import com.seenu.dev.android.qr_craft.domain.validator.QrDataValidator
 import com.seenu.dev.android.qr_craft.presentation.state.QrType
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.QrCraftTheme
@@ -34,7 +33,11 @@ import com.seenu.dev.android.qr_craft.presentation.ui.theme.onSurfaceDisabled
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.surfaceHigher
 
 @Composable
-fun CreateQrForm(modifier: Modifier = Modifier, type: QrType, onGenerateClicked: (QrData) -> Unit) {
+fun CreateQrForm(
+    modifier: Modifier = Modifier,
+    type: QrType,
+    onGenerateClicked: (QrDataUiModel.Data) -> Unit
+) {
     when (type) {
         QrType.TEXT -> QrFormText(modifier = modifier, onGenerateClicked = onGenerateClicked)
         QrType.LINK -> QrFormLink(modifier = modifier, onGenerateClicked = onGenerateClicked)
@@ -65,7 +68,10 @@ private fun QrFormTextPreview() {
 }
 
 @Composable
-private fun QrFormText(modifier: Modifier = Modifier, onGenerateClicked: (QrData) -> Unit = {}) {
+private fun QrFormText(
+    modifier: Modifier = Modifier,
+    onGenerateClicked: (QrDataUiModel.Data) -> Unit = {}
+) {
     var text by remember { mutableStateOf("") }
     val focusRequester = remember {
         FocusRequester()
@@ -80,7 +86,7 @@ private fun QrFormText(modifier: Modifier = Modifier, onGenerateClicked: (QrData
         modifier = modifier,
         hasValidData = hasValidData,
         onGenerateClicked = {
-            val data = QrData.Text(text = text)
+            val data = QrDataUiModel.Data.Text(text = text)
             onGenerateClicked(data)
         }
     ) {
@@ -104,7 +110,7 @@ private fun QrFormLinkPreview() {
 }
 
 @Composable
-fun QrFormLink(modifier: Modifier = Modifier, onGenerateClicked: (QrData) -> Unit = {}) {
+fun QrFormLink(modifier: Modifier = Modifier, onGenerateClicked: (QrDataUiModel.Data) -> Unit = {}) {
     var url by remember { mutableStateOf("") }
 
     var showUrlSuggestion by remember {
@@ -124,7 +130,12 @@ fun QrFormLink(modifier: Modifier = Modifier, onGenerateClicked: (QrData) -> Uni
         modifier = modifier,
         hasValidData = hasValidData,
         onGenerateClicked = {
-            val data = QrData.Url(url = url)
+            val formatted = if (url.startsWith("http://") || url.startsWith("https://")) {
+                url
+            } else {
+                "http://$url"
+            }
+            val data = QrDataUiModel.Data.Url(url = formatted)
             onGenerateClicked(data)
         }
     ) {
@@ -157,7 +168,10 @@ private fun QrFormPhoneNumberPreview() {
 }
 
 @Composable
-fun QrFormPhoneNumber(modifier: Modifier = Modifier, onGenerateClicked: (QrData) -> Unit = {}) {
+fun QrFormPhoneNumber(
+    modifier: Modifier = Modifier,
+    onGenerateClicked: (QrDataUiModel.Data) -> Unit = {}
+) {
     var phoneNumber by remember {
         mutableStateOf("")
     }
@@ -179,7 +193,7 @@ fun QrFormPhoneNumber(modifier: Modifier = Modifier, onGenerateClicked: (QrData)
         modifier = modifier,
         hasValidData = hasValidData,
         onGenerateClicked = {
-            val data = QrData.Phone(phoneNumber = phoneNumber)
+            val data = QrDataUiModel.Data.Phone(phoneNumber = phoneNumber)
             onGenerateClicked(data)
         }
     ) {
@@ -212,7 +226,10 @@ private fun QrFormContactPreview() {
 }
 
 @Composable
-private fun QrFormContact(modifier: Modifier = Modifier, onGenerateClicked: (QrData) -> Unit = {}) {
+private fun QrFormContact(
+    modifier: Modifier = Modifier,
+    onGenerateClicked: (QrDataUiModel.Data) -> Unit = {}
+) {
     var name by remember {
         mutableStateOf("")
     }
@@ -244,7 +261,7 @@ private fun QrFormContact(modifier: Modifier = Modifier, onGenerateClicked: (QrD
         modifier = modifier,
         hasValidData = hasValidData,
         onGenerateClicked = {
-            val data = QrData.Contact(
+            val data = QrDataUiModel.Data.Contact(
                 name = name,
                 email = email,
                 phone = phone
@@ -314,7 +331,7 @@ private fun QrFormGeoLocationPreview() {
 @Composable
 private fun QrFormGeoLocation(
     modifier: Modifier = Modifier,
-    onGenerateClicked: (QrData) -> Unit = {}
+    onGenerateClicked: (QrDataUiModel.Data) -> Unit = {}
 ) {
     var latitude by remember {
         mutableStateOf("")
@@ -344,7 +361,7 @@ private fun QrFormGeoLocation(
         modifier = modifier.focusRequester(focusRequester),
         hasValidData = hasValidData,
         onGenerateClicked = {
-            val data = QrData.GeoLocation(
+            val data = QrDataUiModel.Data.GeoLocation(
                 latitude = latitude.toDouble(),
                 longitude = longitude.toDouble()
             )
@@ -400,7 +417,7 @@ private fun QrFormWifiPreview() {
 @Composable
 private fun QrFormWifi(
     modifier: Modifier = Modifier,
-    onGenerateClicked: (QrData) -> Unit = {}
+    onGenerateClicked: (QrDataUiModel.Data) -> Unit = {}
 ) {
     var ssid by remember {
         mutableStateOf("")
@@ -438,7 +455,7 @@ private fun QrFormWifi(
                     throw IllegalArgumentException("Invalid encryption type")
                 }
             }
-            val data = QrData.Wifi(
+            val data = QrDataUiModel.Data.Wifi(
                 ssid = ssid,
                 password = password,
                 encryptionType = encryptionType

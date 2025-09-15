@@ -10,20 +10,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.seenu.dev.android.qr_craft.R
 import com.seenu.dev.android.qr_craft.presentation.scan_details.components.QrUiModelProvider
 import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
 import com.seenu.dev.android.qr_craft.presentation.state.formattedContent
 import com.seenu.dev.android.qr_craft.presentation.state.getTypeItem
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.QrCraftTheme
+import com.seenu.dev.android.qr_craft.presentation.ui.theme.onOverlay
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.onSurfaceAlt
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.onSurfaceDisabled
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.surfaceHigher
@@ -34,12 +38,16 @@ private fun QrDataItemPreview(
     @PreviewParameter(QrUiModelProvider::class) data: QrDataUiModel
 ) {
     QrCraftTheme {
-        QrDataItem(qrData = data)
+        QrDataItem(qrData = data) {}
     }
 }
 
 @Composable
-fun QrDataItem(modifier: Modifier = Modifier, qrData: QrDataUiModel) {
+fun QrDataItem(
+    modifier: Modifier = Modifier,
+    qrData: QrDataUiModel,
+    onFavIconClicked: (Boolean) -> Unit
+) {
     val item = qrData.getTypeItem()
     Row(
         modifier = modifier
@@ -63,33 +71,56 @@ fun QrDataItem(modifier: Modifier = Modifier, qrData: QrDataUiModel) {
         )
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .weight(1F)
-                .padding(horizontal = 12.dp)
+                .padding(start = 12.dp)
         ) {
-            Text(
-                text = qrData.customTitle.let {
-                    if (it.isNullOrBlank()) {
-                        item.title
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = qrData.customTitle.let {
+                        if (it.isNullOrBlank()) {
+                            item.title
+                        } else {
+                            it
+                        }
+                    },
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1F)
+                )
+                IconButton(onClick = {
+                    onFavIconClicked(!qrData.isFavourite)
+                }, modifier = Modifier.size(32.dp)) {
+                    val (iconRes, tint) = if (qrData.isFavourite) {
+                        R.drawable.ic_fav_filled to MaterialTheme.colorScheme.onSurface
                     } else {
-                        it
+                        R.drawable.ic_fav_outline to MaterialTheme.colorScheme.onSurfaceDisabled
                     }
-                },
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+                    Icon(
+                        painter = painterResource(iconRes),
+                        contentDescription = "Mark as favourite",
+                        tint = tint
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = qrData.data.formattedContent(),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceAlt
+                color = MaterialTheme.colorScheme.onSurfaceAlt,
+                modifier = Modifier
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = qrData.createdAtLabel,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceDisabled
+                color = MaterialTheme.colorScheme.onSurfaceDisabled,
+                modifier = Modifier
             )
         }
     }

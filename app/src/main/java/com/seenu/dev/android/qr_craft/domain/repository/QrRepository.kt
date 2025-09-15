@@ -7,12 +7,14 @@ interface QrRepository {
 
     suspend fun getAllQrData(isScanned: Boolean): Flow<List<QrData>>
     suspend fun getQrData(id: Long): QrData?
+    suspend fun getQrDataAsFlow(id: Long): Flow<QrData?>
 
     suspend fun insertQrData(qrData: QrData): Long
 
     suspend fun updateQrData(qrData: QrData)
 
     suspend fun updateQrTitle(title: String, id: Long)
+    suspend fun updateQrFavourite(isFavourite: Boolean, id: Long)
 
     suspend fun deleteQrData(id: Long)
 

@@ -25,6 +25,12 @@ class QrRepositoryImpl constructor() : QrRepository, KoinComponent {
         return qrDataDao.getQrData(id)?.toDomain()
     }
 
+    override suspend fun getQrDataAsFlow(id: Long): Flow<QrData?> {
+        return qrDataDao.getQrDataAsFlow(id).map {
+            it?.toDomain()
+        }
+    }
+
     override suspend fun insertQrData(qrData: QrData): Long {
         return qrDataDao.insertQrData(qrData.toEntity())
     }
@@ -35,6 +41,10 @@ class QrRepositoryImpl constructor() : QrRepository, KoinComponent {
 
     override suspend fun updateQrTitle(title: String, id: Long) {
         qrDataDao.updateQrTitle(title, id)
+    }
+
+    override suspend fun updateQrFavourite(isFavourite: Boolean, id: Long) {
+        qrDataDao.updateQrFavourite(isFavourite, id)
     }
 
     override suspend fun deleteQrData(id: Long) {

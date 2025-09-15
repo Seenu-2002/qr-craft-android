@@ -129,6 +129,9 @@ fun QrHistoryScreen(
                             onItemLongPress = { item ->
                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                                 viewModel.onItemLongPressed(item)
+                            },
+                            onFavIconClicked = { item, isFav ->
+                                viewModel.updateFavorite(item.id, isFav)
                             }
                         )
                     }

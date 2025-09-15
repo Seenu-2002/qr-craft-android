@@ -7,6 +7,7 @@ data class QrData @OptIn(ExperimentalTime::class) constructor(
     val id: Long,
     val customTitle: String?,
     val data: String,
+    val isFavourite: Boolean,
     val isScanned: Boolean,
     val createdAt: Instant,
     val lastUpdatedAt: Instant

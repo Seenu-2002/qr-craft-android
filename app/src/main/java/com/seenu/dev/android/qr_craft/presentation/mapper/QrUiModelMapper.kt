@@ -33,6 +33,7 @@ fun QrData.toUiModel(): QrDataUiModel {
         id = id,
         customTitle = customTitle,
         isScanned = isScanned,
+        isFavourite = isFavourite,
         createdAtLabel = createdAt.formatDateTime(),
         lastUpdatedAt = lastUpdatedAt.formatDateTime(),
         data = QrUiModelDataParser.parse(qrData = this)

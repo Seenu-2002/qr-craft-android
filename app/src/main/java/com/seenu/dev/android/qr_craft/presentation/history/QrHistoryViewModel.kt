@@ -73,6 +73,12 @@ class QrHistoryViewModel constructor(
         }
     }
 
+    fun updateFavorite(id: Long, isFavorite: Boolean) {
+        viewModelScope.launch {
+            qrRepository.updateQrFavourite(isFavorite, id)
+        }
+    }
+
     fun clearDeleteStatus() {
         _deleteStatus.value = UiState.Empty()
     }

@@ -21,8 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -200,7 +202,7 @@ class MainActivity : ComponentActivity() {
                                 Screen.Scanner.route, Screen.ChooseQrType.route, Screen.QrHistory.route -> true
                                 else -> false
                             }
-                            var selectedItem by remember { mutableStateOf(items[1]) }
+                            var selectedItemIndex by rememberSaveable { mutableIntStateOf(1) }
                             AnimatedVisibility(
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)
@@ -214,11 +216,12 @@ class MainActivity : ComponentActivity() {
                                     animationSpec = tween(durationMillis = 300)
                                 )
                             ) {
+                                val selectedItem = items[selectedItemIndex]
                                 ScreenSlider(
                                     items = items,
                                     selectedItem = selectedItem
                                 ) { index, item ->
-                                    selectedItem = item
+                                    selectedItemIndex = index
 
                                     val route = when (index) {
                                         0 -> Screen.QrHistory.route

@@ -38,6 +38,7 @@ class QrScannerViewModel constructor(
                 createdAt = now,
                 lastUpdatedAt = now,
                 isScanned = true,
+                isFavourite = false,
                 data = rawValue,
             )
             val id = qrRepository.insertQrData(qrData)

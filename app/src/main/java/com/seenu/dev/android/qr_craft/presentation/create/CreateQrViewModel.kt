@@ -31,6 +31,7 @@ class CreateQrViewModel constructor(
                     createdAt = Clock.System.now(),
                     lastUpdatedAt = Clock.System.now(),
                     isScanned = false,
+                    isFavourite = false,
                     data = data,
                 )
                 val id = qrRepository.insertQrData(qrData)

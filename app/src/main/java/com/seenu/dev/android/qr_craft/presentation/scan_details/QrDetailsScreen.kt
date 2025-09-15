@@ -45,6 +45,7 @@ import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
 import com.seenu.dev.android.qr_craft.presentation.misc.QrGenerator
 import com.seenu.dev.android.qr_craft.presentation.scan_details.components.QrDetailsContent
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.onOverlay
+import com.seenu.dev.android.qr_craft.presentation.ui.theme.onSurfaceDisabled
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.surfaceHigher
 import org.koin.androidx.compose.koinViewModel
 
@@ -114,6 +115,26 @@ fun QrDetailsScreen(
                         text = stringResource(textRes),
                         style = MaterialTheme.typography.titleMedium
                     )
+                },
+                actions = {
+                    val qrData = (qrDataState as? UiState.Success)?.data?.toUiModel()
+                        ?: return@CenterAlignedTopAppBar
+                    val isFavourite = qrData.isFavourite
+                    IconButton(onClick = {
+                        viewModel.updateFavorite(qrData.id, !isFavourite)
+                    }) {
+                        val (iconRes, tint) = if (isFavourite) {
+                            R.drawable.ic_fav_filled to MaterialTheme.colorScheme.onOverlay
+                        } else {
+                            R.drawable.ic_fav_outline to MaterialTheme.colorScheme.onSurfaceDisabled
+                        }
+
+                        Icon(
+                            painter = painterResource(iconRes),
+                            contentDescription = "Mark as favourite",
+                            tint = tint
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.onSurface,

@@ -27,6 +27,7 @@
     <string name="action_copy">Copy</string>
     <string name="action_share">Share</string>
     <string name="action_delete">Delete</string>
+    <string name="action_save">Save</string>
     <string name="error_camera">Unable to connect to the Camera.</string>
     <string name="error_qr_processing">Unable to parse QR. Try again</string>
     <string name="loading">Loading</string>
@@ -43,6 +44,9 @@
     <string name="scan_history">Scan History</string>
     <string name="scanned">Scanned</string>
     <string name="generated">Generated</string>
+    <string name="qr_save_success">Image saved to Downloads!</string>
+    <string name="qr_save_error">Unable to save image.</string>
+    <string name="qr_save_not_supported">Saving not supported on this Android version</string>
 
     <string name="error_create_qr">Unable to create QR.</string>
     <string name="no_history">History is empty.</string>

@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "QR Scanner"
+rootProject.name = "QR Craft"
 include(":app")
  

@@ -22,17 +22,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.LinearGradient
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.seenu.dev.android.qr_craft.R
 import com.seenu.dev.android.qr_craft.presentation.scan_details.components.QrUiModelProvider
@@ -66,7 +73,8 @@ fun QrDataItemList(
     modifier: Modifier = Modifier,
     qrItems: List<QrDataUiModel>,
     onItemLongPress: (QrDataUiModel) -> Unit,
-    onItemClick: (QrDataUiModel) -> Unit
+    onItemClick: (QrDataUiModel) -> Unit,
+    onFavIconClicked: (QrDataUiModel, Boolean) -> Unit = { _, _ -> }
 ) {
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
@@ -82,19 +90,31 @@ fun QrDataItemList(
             return
         }
 
-        val lazyListState = rememberLazyListState()
-
-        val size = qrItems.size
-        val lastVisibleItemIndex =
-            lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-
+        var listSize by remember {
+            mutableStateOf(IntSize.Zero)
+        }
+        val density = LocalDensity.current
         LazyColumn(
-            state = lazyListState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(vertical = 4.dp)
+                .onGloballyPositioned {
+                    listSize = it.size
+                }
         ) {
-            items(qrItems) { item ->
+            items(qrItems.size + 1) { index ->
+
+                // Empty box to provide spacing at the end of the list
+                if (index == qrItems.size) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(with(density) { (listSize.height * .2F).toDp() })
+                    )
+                    return@items
+                }
+
+                val item = qrItems[index]
                 QrDataItem(
                     modifier = Modifier
                         .animateItem(
@@ -117,30 +137,26 @@ fun QrDataItemList(
                             })
                         },
                     qrData = item,
+                    onFavIconClicked = {
+                        onFavIconClicked(item, it)
+                    }
                 )
             }
         }
-        AnimatedVisibility(
-            visible = lastVisibleItemIndex != size - 1,
+        Box(
             modifier = Modifier
-                .align(Alignment.BottomEnd),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(.3F)
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color.Transparent,
-                                MaterialTheme.colorScheme.surface
-                            )
+                .fillMaxWidth()
+                .fillMaxHeight(.3F)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            Color.Transparent,
+                            MaterialTheme.colorScheme.surface
                         )
                     )
-            )
-        }
+                )
+                .align(Alignment.BottomEnd)
+        )
     }
 }

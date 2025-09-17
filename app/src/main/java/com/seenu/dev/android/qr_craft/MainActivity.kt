@@ -3,6 +3,7 @@ package com.seenu.dev.android.qr_craft
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
@@ -21,12 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -43,18 +44,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
-import com.seenu.dev.android.qr_craft.presentation.common.components.ScreenSlider
-import com.seenu.dev.android.qr_craft.presentation.common.components.ScreenSliderItem
+import com.seenu.dev.android.qr_craft.framework.image.ImageSaverFactory
 import com.seenu.dev.android.qr_craft.presentation.create.ChooseQrTypeScreen
 import com.seenu.dev.android.qr_craft.presentation.create.CreateQrScreen
 import com.seenu.dev.android.qr_craft.presentation.design_system.LocalDimen
+import com.seenu.dev.android.qr_craft.presentation.design_system.components.ScreenSliderItem
+import com.seenu.dev.android.qr_craft.presentation.design_system.components.ScreenSliderWithoutAnimation
 import com.seenu.dev.android.qr_craft.presentation.design_system.dimen600dp
 import com.seenu.dev.android.qr_craft.presentation.design_system.dimenMobilePortrait
 import com.seenu.dev.android.qr_craft.presentation.history.QrHistoryScreen
 import com.seenu.dev.android.qr_craft.presentation.route.Screen
 import com.seenu.dev.android.qr_craft.presentation.scan_details.QrDetailsScreen
 import com.seenu.dev.android.qr_craft.presentation.scanner.QrScannerScreen
+import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
 import com.seenu.dev.android.qr_craft.presentation.state.QrType
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.QrCraftTheme
 import com.seenu.dev.android.qr_craft.presentation.util.DeviceConfiguration
@@ -135,6 +137,9 @@ class MainActivity : ComponentActivity() {
                                             },
                                             onBackPressed = {
                                                 navController.popBackStack()
+                                            },
+                                            onSave = { title, bitmap ->
+                                                saveImage(title, bitmap)
                                             }
                                         )
                                     }
@@ -200,7 +205,7 @@ class MainActivity : ComponentActivity() {
                                 Screen.Scanner.route, Screen.ChooseQrType.route, Screen.QrHistory.route -> true
                                 else -> false
                             }
-                            var selectedItem by remember { mutableStateOf(items[1]) }
+                            var selectedItemIndex by rememberSaveable { mutableIntStateOf(1) }
                             AnimatedVisibility(
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)
@@ -214,17 +219,18 @@ class MainActivity : ComponentActivity() {
                                     animationSpec = tween(durationMillis = 300)
                                 )
                             ) {
-                                ScreenSlider(
+                                val selectedItem = items[selectedItemIndex]
+                                ScreenSliderWithoutAnimation(
                                     items = items,
                                     selectedItem = selectedItem
                                 ) { index, item ->
-                                    selectedItem = item
+                                    selectedItemIndex = index
 
                                     val route = when (index) {
                                         0 -> Screen.QrHistory.route
                                         1 -> Screen.Scanner.route
                                         2 -> Screen.ChooseQrType.route
-                                        else -> return@ScreenSlider
+                                        else -> return@ScreenSliderWithoutAnimation
                                     }
                                     navController.navigate(route) {
                                         popUpTo(0) {
@@ -270,6 +276,11 @@ class MainActivity : ComponentActivity() {
         }
         val shareIntent = Intent.createChooser(intent, null)
         startActivity(shareIntent)
+    }
+
+    private fun saveImage(title: String, bitmap: Bitmap) {
+        val fileName = "$title-${System.currentTimeMillis()}"
+        ImageSaverFactory.getSaver().save(this.applicationContext, bitmap, fileName)
     }
 }
 

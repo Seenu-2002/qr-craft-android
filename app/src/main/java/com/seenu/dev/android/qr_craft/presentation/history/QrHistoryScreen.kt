@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.seenu.dev.android.qr_craft.R
 import com.seenu.dev.android.qr_craft.presentation.UiState
-import com.seenu.dev.android.qr_craft.presentation.common.components.SlidingSwitch
+import com.seenu.dev.android.qr_craft.presentation.design_system.components.SlidingSwitch
 import com.seenu.dev.android.qr_craft.presentation.design_system.LocalDimen
 import com.seenu.dev.android.qr_craft.presentation.history.components.QrDataItemList
 import com.seenu.dev.android.qr_craft.presentation.history.components.QrHistoryItemActionBottomSheet
@@ -129,6 +129,9 @@ fun QrHistoryScreen(
                             onItemLongPress = { item ->
                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                                 viewModel.onItemLongPressed(item)
+                            },
+                            onFavIconClicked = { item, isFav ->
+                                viewModel.updateFavorite(item.id, isFav)
                             }
                         )
                     }

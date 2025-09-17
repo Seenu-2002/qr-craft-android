@@ -11,6 +11,7 @@ fun QrDataEntity.toDomain(): QrData {
         id = this.id,
         customTitle = this.title,
         data = this.data,
+        isFavourite = isFavourite,
         isScanned = this.isScanned,
         createdAt = Instant.fromEpochMilliseconds(this.createdAt),
         lastUpdatedAt = Instant.fromEpochMilliseconds(this.lastUpdatedAt)
@@ -23,6 +24,7 @@ fun QrData.toEntity(): QrDataEntity {
         id = this.id,
         title = this.customTitle,
         data = this.data,
+        isFavourite = this.isFavourite,
         isScanned = this.isScanned,
         createdAt = this.createdAt.toEpochMilliseconds(),
         lastUpdatedAt = this.lastUpdatedAt.toEpochMilliseconds()

@@ -31,12 +31,13 @@ class CreateQrViewModel constructor(
                     createdAt = Clock.System.now(),
                     lastUpdatedAt = Clock.System.now(),
                     isScanned = false,
+                    isFavourite = false,
                     data = data,
                 )
                 val id = qrRepository.insertQrData(qrData)
                 _qrData.value = UiState.Success(qrData.copy(id = id))
             } catch (e: Exception) {
-                _qrData.value = UiState.Error(e.message)
+                _qrData.value = UiState.Error(e)
             }
         }
     }

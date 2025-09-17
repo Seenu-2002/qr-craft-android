@@ -2,6 +2,7 @@ package com.seenu.dev.android.qr_craft.presentation.scan_details.components
 
 import android.R.attr.text
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -20,6 +21,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,6 +66,7 @@ class QrUiModelProvider : PreviewParameterProvider<QrDataUiModel> {
                 customTitle = "Sample title",
                 createdAtLabel = "2024-10-01 10:00",
                 lastUpdatedAt = "2024-10-01 10:00",
+                isFavourite = true,
                 isScanned = true,
                 data = QrDataUiModel.Data.Text(
                     text = "QR Code detected: Meeting notes:\n" +
@@ -76,6 +80,7 @@ class QrUiModelProvider : PreviewParameterProvider<QrDataUiModel> {
                 customTitle = "Sample title",
                 createdAtLabel = "2024-10-01 10:00",
                 lastUpdatedAt = "2024-10-01 10:00",
+                isFavourite = true,
                 isScanned = true,
                 data = QrDataUiModel.Data.Url("https://www.example.com"),
             ),
@@ -84,6 +89,7 @@ class QrUiModelProvider : PreviewParameterProvider<QrDataUiModel> {
                 customTitle = "Sample title",
                 createdAtLabel = "2024-10-01 10:00",
                 lastUpdatedAt = "2024-10-01 10:00",
+                isFavourite = true,
                 isScanned = true,
                 data = QrDataUiModel.Data.Contact("John Doe", "+1234567890", "johndoe@yahoo.com"),
             ),
@@ -92,24 +98,27 @@ class QrUiModelProvider : PreviewParameterProvider<QrDataUiModel> {
                 customTitle = "Sample title",
                 createdAtLabel = "2024-10-01 10:00",
                 lastUpdatedAt = "2024-10-01 10:00",
+                isFavourite = true,
                 isScanned = true,
-                QrDataUiModel.Data.GeoLocation(37.7749, -122.4194),
+                data = QrDataUiModel.Data.GeoLocation(37.7749, -122.4194),
             ),
             QrDataUiModel(
                 id = 12L,
                 customTitle = "Sample title",
                 createdAtLabel = "2024-10-01 10:00",
                 lastUpdatedAt = "2024-10-01 10:00",
+                isFavourite = false,
                 isScanned = true,
-                QrDataUiModel.Data.Phone("+1234567890"),
+                data = QrDataUiModel.Data.Phone("+1234567890"),
             ),
             QrDataUiModel(
                 id = 12L,
                 customTitle = "Sample title",
                 createdAtLabel = "2024-10-01 10:00",
                 lastUpdatedAt = "2024-10-01 10:00",
+                isFavourite = true,
                 isScanned = true,
-                QrDataUiModel.Data.Wifi(
+                data = QrDataUiModel.Data.Wifi(
                     ssid = "MyWifiNetwork",
                     password = "securepassword",
                     encryptionType = "WPA",
@@ -139,6 +148,7 @@ fun QrDetailsContent(
     contentTopPadding: Dp = 16.dp,
     onCopy: (data: QrDataUiModel) -> Unit = {},
     onShare: (data: QrDataUiModel) -> Unit = {},
+    onSave: (data: QrDataUiModel) -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -155,13 +165,16 @@ fun QrDetailsContent(
             mutableStateOf(false)
         }
         BasicTextField(
-            value = if (hasFocus){
+            value = if (hasFocus) {
                 title ?: ""
             } else {
                 title ?: defTitle
             },
             onValueChange = onTitleChange,
-            keyboardOptions = KeyboardOptions(KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions(
+                KeyboardCapitalization.Sentences,
+                imeAction = ImeAction.Done
+            ),
             textStyle = MaterialTheme.typography.titleMedium.copy(
                 textAlign = TextAlign.Center
             ),
@@ -227,51 +240,62 @@ fun QrDetailsContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            Button(
+            IconButton(
                 onClick = {
                     onShare(qrData)
                 },
-                modifier = Modifier
-                    .weight(1F)
-                    .padding(horizontal = 8.dp),
-                colors = ButtonDefaults.buttonColors(
+                modifier = Modifier,
+                colors = IconButtonDefaults.iconButtonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceHigher,
                     contentColor = MaterialTheme.colorScheme.onSurface
                 )
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_share),
-                        contentDescription = "Share",
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = stringResource(R.string.action_share),
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
+                Icon(
+                    painter = painterResource(R.drawable.ic_share),
+                    contentDescription = stringResource(R.string.action_share),
+                    modifier = Modifier.size(16.dp)
+                )
             }
-            Button(
+            Spacer(modifier = Modifier.width(4.dp))
+            IconButton(
                 onClick = {
                     onCopy(qrData)
-                }, modifier = Modifier
-                    .weight(1F)
-                    .padding(horizontal = 8.dp),
+                }, modifier = Modifier,
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceHigher,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_copy),
+                    contentDescription = stringResource(R.string.action_copy),
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(4.dp))
+            Button(
+                onClick = {
+                    onSave(qrData)
+                },
+                modifier = Modifier
+                    .weight(1F),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceHigher,
                     contentColor = MaterialTheme.colorScheme.onSurface
                 )
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_copy),
-                        contentDescription = "Copy",
+                        painter = painterResource(R.drawable.ic_save),
+                        contentDescription = stringResource(R.string.action_save),
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = stringResource(R.string.action_copy),
+                        text = stringResource(R.string.action_save),
                         style = MaterialTheme.typography.labelLarge
                     )
                 }

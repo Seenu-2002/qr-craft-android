@@ -8,6 +8,7 @@ import androidx.room.Update
 import androidx.room.Upsert
 import com.seenu.dev.android.qr_craft.data.entity.QrDataEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 @Dao
 interface QrDataDao {
@@ -24,11 +25,17 @@ interface QrDataDao {
     @Query("SELECT * FROM qr_data WHERE id = :id")
     suspend fun getQrData(id: Long): QrDataEntity?
 
+    @Query("SELECT * FROM qr_data WHERE id = :id")
+    fun getQrDataAsFlow(id: Long): Flow<QrDataEntity?>
+
     @Upsert
     suspend fun updateQrData(qrDataDao: QrDataEntity)
 
     @Query("UPDATE qr_data SET title = :title, last_updated_at = CURRENT_TIMESTAMP WHERE id = :id")
     suspend fun updateQrTitle(title: String, id: Long)
+
+    @Query("UPDATE qr_data SET is_favourite = :isFavourite, last_updated_at = CURRENT_TIMESTAMP WHERE id = :id")
+    suspend fun updateQrFavourite(isFavourite: Boolean, id: Long)
 
     @Query("DELETE FROM qr_data WHERE id = :id")
     suspend fun deleteQrData(id: Long)

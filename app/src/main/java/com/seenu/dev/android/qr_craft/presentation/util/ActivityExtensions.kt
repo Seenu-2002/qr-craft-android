@@ -1,4 +1,4 @@
-package com.seenu.dev.android.qr_craft.presentation.common
+package com.seenu.dev.android.qr_craft.presentation.util
 
 import android.app.Activity
 import android.content.Intent

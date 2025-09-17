@@ -1,6 +1,5 @@
-package com.seenu.dev.android.qr_craft.presentation.common
+package com.seenu.dev.android.qr_craft.presentation.design_system.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

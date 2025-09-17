@@ -51,7 +51,7 @@ class QrHistoryViewModel constructor(
                 }
             } catch (exp: Exception) {
                 Timber.e(exp, "Error fetching scanned history")
-                _qrHistoryData.value = UiState.Error(exp.message)
+                _qrHistoryData.value = UiState.Error(exp)
             }
         }
     }
@@ -68,8 +68,14 @@ class QrHistoryViewModel constructor(
                 _deleteStatus.value = UiState.Success(Unit)
             } catch (exp: Exception) {
                 Timber.e(exp, "Error deleting item with id: ${item.id}")
-                _deleteStatus.value = UiState.Error(exp.message)
+                _deleteStatus.value = UiState.Error(exp)
             }
+        }
+    }
+
+    fun updateFavorite(id: Long, isFavorite: Boolean) {
+        viewModelScope.launch {
+            qrRepository.updateQrFavourite(isFavorite, id)
         }
     }
 

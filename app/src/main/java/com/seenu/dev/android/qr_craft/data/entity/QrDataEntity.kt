@@ -10,6 +10,8 @@ data class QrDataEntity constructor(
     val id: Long,
     val title: String?,
     val data: String,
+    @ColumnInfo(name = "is_favourite")
+    val isFavourite: Boolean,
     @ColumnInfo(name = "is_scanned")
     val isScanned: Boolean,
     @ColumnInfo(name = "created_at")

@@ -1,14 +1,19 @@
 package com.seenu.dev.android.qr_craft.presentation.state
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.seenu.dev.android.qr_craft.R
+import com.seenu.dev.android.qr_craft.presentation.ui.theme.onOverlay
+import com.seenu.dev.android.qr_craft.presentation.ui.theme.onSurfaceDisabled
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class QrDataUiModel constructor(
     val id: Long,
     val customTitle: String?,
+    val isFavourite: Boolean,
     val createdAtLabel: String,
     val lastUpdatedAt: String,
     val isScanned: Boolean,

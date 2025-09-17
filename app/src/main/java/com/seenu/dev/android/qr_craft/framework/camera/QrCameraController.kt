@@ -13,6 +13,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.asFlow
 import com.seenu.dev.android.qr_craft.R
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,7 +40,7 @@ class QrCameraController(
     private val qrAnalyzer = QRCodeAnalyzer(object : QRCodeAnalyzer.ProcessListener {
         override fun onSuccess(qrData: String) = onQrScanned(qrData)
         override fun onFailure(exception: Exception) = onQrError(exception)
-    })
+    }, scope = CoroutineScope(cameraExecutor.asCoroutineDispatcher()))
 
     fun bindCamera(previewView: PreviewView) {
         val cameraProvider = cameraProviderFuture.get()
@@ -72,9 +73,11 @@ class QrCameraController(
 
     fun pauseAnalyzer() = qrAnalyzer.pause()
     fun resumeAnalyzer() = qrAnalyzer.resume()
-    fun analyzeBitmap(bitmap: android.graphics.Bitmap) = qrAnalyzer.analyze(bitmap)
+    fun analyzeBitmap(bitmap: android.graphics.Bitmap) {
+        qrAnalyzer.analyze(bitmap)
+    }
+
     fun hasFlash(): Boolean = camera?.cameraInfo?.hasFlashUnit() ?: false
-    fun isFlashOn(): Boolean = camera?.cameraInfo?.torchState?.value == TorchState.ON
     fun toggleFlash(isOn: Boolean) {
         camera?.cameraControl?.enableTorch(isOn)
     }

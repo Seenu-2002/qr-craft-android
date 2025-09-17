@@ -94,8 +94,21 @@ fun QrScannerScreen(
 
     val qrDataState by viewModel.qrData.collectAsStateWithLifecycle(initialValue = UiState.Empty())
 
-    var showNoQrFoundDialog by rememberSaveable {
+    var showNoQrFoundDialog by remember {
         mutableStateOf(false)
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.resetState()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -121,6 +134,7 @@ fun QrScannerScreen(
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+                    viewModel.resetState()
                 }
 
                 else -> {
@@ -161,7 +175,7 @@ fun QrScannerScreen(
             if (!isCameraPermissionGranted) {
                 return@Box
             }
-            val isProcessingQr = qrDataState is UiState.Loading
+            val isScannerEnabled = qrDataState is UiState.Empty
 
             val cameraController = remember {
                 QrCameraController(
@@ -177,11 +191,21 @@ fun QrScannerScreen(
                 )
             }
 
-            LaunchedEffect(isProcessingQr, showNoQrFoundDialog) {
-                if (isProcessingQr || showNoQrFoundDialog) {
+            DisposableEffect(Unit) {
+                onDispose {
+                    cameraController.release()
+                }
+            }
+
+            LaunchedEffect(isScannerEnabled, showNoQrFoundDialog) {
+                if (showNoQrFoundDialog) {
                     cameraController.pauseAnalyzer()
                 } else {
-                    cameraController.resumeAnalyzer()
+                    if (isScannerEnabled) {
+                        cameraController.resumeAnalyzer()
+                    } else {
+                        cameraController.pauseAnalyzer()
+                    }
                 }
             }
 
@@ -207,7 +231,7 @@ fun QrScannerScreen(
             )
             ScannerOverlay(
                 modifier = Modifier.fillMaxSize(),
-                showCameraBounds = !isProcessingQr
+                showCameraBounds = isScannerEnabled
             )
 
             Row(
@@ -263,6 +287,7 @@ fun QrScannerScreen(
                         val bitmap = BitmapDecoderFactory.getDecoder().decode(context, uri)
                         cameraController.analyzeBitmap(bitmap)
                     }
+                    imageUri = null
                 }
 
                 IconButton(
@@ -285,6 +310,7 @@ fun QrScannerScreen(
                 }
             }
 
+            val isProcessingQr = qrDataState is UiState.Loading
             if (isProcessingQr) {
                 Column(
                     modifier = Modifier.align(Alignment.Center),

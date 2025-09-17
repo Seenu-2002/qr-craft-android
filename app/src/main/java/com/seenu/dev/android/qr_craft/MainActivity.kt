@@ -45,18 +45,18 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.seenu.dev.android.qr_craft.framework.image.ImageSaverFactory
-import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
-import com.seenu.dev.android.qr_craft.presentation.design_system.components.ScreenSlider
-import com.seenu.dev.android.qr_craft.presentation.design_system.components.ScreenSliderItem
 import com.seenu.dev.android.qr_craft.presentation.create.ChooseQrTypeScreen
 import com.seenu.dev.android.qr_craft.presentation.create.CreateQrScreen
 import com.seenu.dev.android.qr_craft.presentation.design_system.LocalDimen
+import com.seenu.dev.android.qr_craft.presentation.design_system.components.ScreenSliderItem
+import com.seenu.dev.android.qr_craft.presentation.design_system.components.ScreenSliderWithoutAnimation
 import com.seenu.dev.android.qr_craft.presentation.design_system.dimen600dp
 import com.seenu.dev.android.qr_craft.presentation.design_system.dimenMobilePortrait
 import com.seenu.dev.android.qr_craft.presentation.history.QrHistoryScreen
 import com.seenu.dev.android.qr_craft.presentation.route.Screen
 import com.seenu.dev.android.qr_craft.presentation.scan_details.QrDetailsScreen
 import com.seenu.dev.android.qr_craft.presentation.scanner.QrScannerScreen
+import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
 import com.seenu.dev.android.qr_craft.presentation.state.QrType
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.QrCraftTheme
 import com.seenu.dev.android.qr_craft.presentation.util.DeviceConfiguration
@@ -220,7 +220,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             ) {
                                 val selectedItem = items[selectedItemIndex]
-                                ScreenSlider(
+                                ScreenSliderWithoutAnimation(
                                     items = items,
                                     selectedItem = selectedItem
                                 ) { index, item ->
@@ -230,7 +230,7 @@ class MainActivity : ComponentActivity() {
                                         0 -> Screen.QrHistory.route
                                         1 -> Screen.Scanner.route
                                         2 -> Screen.ChooseQrType.route
-                                        else -> return@ScreenSlider
+                                        else -> return@ScreenSliderWithoutAnimation
                                     }
                                     navController.navigate(route) {
                                         popUpTo(0) {

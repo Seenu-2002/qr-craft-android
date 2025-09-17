@@ -9,13 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
-import androidx.camera.core.Camera
-import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.Preview
-import androidx.camera.core.TorchState
-import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,18 +56,19 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.seenu.dev.android.qr_craft.R
 import com.seenu.dev.android.qr_craft.framework.bitmap.BitmapDecoderFactory
+import com.seenu.dev.android.qr_craft.framework.camera.QRCodeAnalyzer
+import com.seenu.dev.android.qr_craft.framework.camera.QrCameraController
 import com.seenu.dev.android.qr_craft.presentation.UiState
 import com.seenu.dev.android.qr_craft.presentation.design_system.components.CustomSnackBar
 import com.seenu.dev.android.qr_craft.presentation.design_system.components.PermissionDialog
 import com.seenu.dev.android.qr_craft.presentation.design_system.components.PermissionTextProvider
-import com.seenu.dev.android.qr_craft.presentation.util.openAppSettings
-import com.seenu.dev.android.qr_craft.presentation.misc.QRCodeAnalyzer
 import com.seenu.dev.android.qr_craft.presentation.scanner.components.NoQRFoundDialog
 import com.seenu.dev.android.qr_craft.presentation.scanner.components.ScannerOverlay
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.onOverlay
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.onSurfaceDisabled
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.success
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.surfaceHigher
+import com.seenu.dev.android.qr_craft.presentation.util.openAppSettings
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -166,49 +161,32 @@ fun QrScannerScreen(
             if (!isCameraPermissionGranted) {
                 return@Box
             }
-            val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
             val isProcessingQr = qrDataState is UiState.Loading
 
-            val qrAnalyzer = remember {
-                val listener = object : QRCodeAnalyzer.ProcessListener {
-
-                    override fun onSuccess(qrData: String) {
-                        Timber.d("QR code processed successfully: $qrData")
-                        viewModel.parseQrData(qrData)
+            val cameraController = remember {
+                QrCameraController(
+                    context = context,
+                    lifecycleOwner = lifecycleOwner,
+                    scope = scope,
+                    onQrScanned = { data ->
+                        viewModel.parseQrData(data)
+                    },
+                    onQrError = { exp ->
+                        viewModel.throwQrAnalyzeError(exp)
                     }
-
-                    override fun onFailure(exception: Exception) {
-                        Timber.e(exception, "QR code processing failed")
-                        viewModel.throwQrAnalyzeError(exception)
-                    }
-
-                }
-                QRCodeAnalyzer(listener = listener)
+                )
             }
+
             LaunchedEffect(isProcessingQr, showNoQrFoundDialog) {
                 if (isProcessingQr || showNoQrFoundDialog) {
-                    qrAnalyzer.pause()
+                    cameraController.pauseAnalyzer()
                 } else {
-                    qrAnalyzer.resume()
+                    cameraController.resumeAnalyzer()
                 }
             }
 
-            var camera: Camera? by remember {
-                mutableStateOf(null)
-            }
-            val hasFlash: Boolean = remember(camera) {
-                camera?.cameraInfo?.hasFlashUnit() ?: false
-            }
-            var isFlashOn by remember {
-                mutableStateOf(false)
-            }
-            LaunchedEffect(camera) {
-                if (hasFlash) {
-                    camera?.cameraInfo?.torchState?.observe(lifecycleOwner) { value ->
-                        isFlashOn = value == TorchState.ON
-                    }
-                }
-            }
+            val hasFlash: Boolean = cameraController.hasFlash()
+            val isFlashOn: Boolean by cameraController.torchState.collectAsStateWithLifecycle()
 
             AndroidView(
                 modifier = Modifier
@@ -217,30 +195,8 @@ fun QrScannerScreen(
                     PreviewView(context)
                 },
                 update = { previewView ->
-                    val cameraProvider = cameraProviderFuture.get()
-                    val preview = Preview.Builder().build()
-                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-                    preview.surfaceProvider = previewView.surfaceProvider
-
-
-                    val imageAnalyzer = ImageAnalysis.Builder()
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                        .build()
-
-                    imageAnalyzer.setAnalyzer(
-                        ContextCompat.getMainExecutor(context),
-                        qrAnalyzer
-                    )
-
                     try {
-                        cameraProvider.unbindAll()
-                        camera = cameraProvider.bindToLifecycle(
-                            lifecycleOwner,
-                            cameraSelector,
-                            preview,
-                            imageAnalyzer
-                        )
+                        cameraController.bindCamera(previewView)
                     } catch (exc: Exception) {
                         // Handle camera binding errors
                         Timber.e(exc, "Use case binding failed")
@@ -275,11 +231,7 @@ fun QrScannerScreen(
                     enabled = hasFlash,
                     onClick = {
                         if (hasFlash) {
-                            camera?.let { cam ->
-                                val newTorchState =
-                                    if (isFlashOn) TorchState.OFF else TorchState.ON
-                                cam.cameraControl.enableTorch(newTorchState == TorchState.ON)
-                            }
+                            cameraController.toggleFlash(!isFlashOn)
                         }
                     },
                     colors = IconButtonDefaults.iconButtonColors(
@@ -309,7 +261,7 @@ fun QrScannerScreen(
                 LaunchedEffect(imageUri) {
                     imageUri?.let { uri ->
                         val bitmap = BitmapDecoderFactory.getDecoder().decode(context, uri)
-                        qrAnalyzer.analyze(bitmap)
+                        cameraController.analyzeBitmap(bitmap)
                     }
                 }
 

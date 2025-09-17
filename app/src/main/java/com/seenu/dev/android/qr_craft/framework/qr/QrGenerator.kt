@@ -1,10 +1,11 @@
-package com.seenu.dev.android.qr_craft.presentation.misc
+package com.seenu.dev.android.qr_craft.framework.qr
 
 import android.graphics.Bitmap
 import androidx.core.graphics.createBitmap
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
+import timber.log.Timber
 
 object QrGenerator {
 
@@ -26,6 +27,7 @@ object QrGenerator {
                 setPixels(pixels, 0, width, 0, 0, width, height)
             }
         } catch (e: Exception) {
+            Timber.e(e, "QR generation failed")
             null
         }
     }

@@ -1,6 +1,7 @@
-package com.seenu.dev.android.qr_craft.presentation.misc
+package com.seenu.dev.android.qr_craft.framework.camera
 
 import android.graphics.Bitmap
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -22,7 +23,7 @@ class QRCodeAnalyzer constructor(
         isPaused = false
     }
 
-    @androidx.camera.core.ExperimentalGetImage
+    @ExperimentalGetImage
     override fun analyze(imageProxy: ImageProxy) {
         if (isProcessing || isPaused) {
             imageProxy.close()

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QR Scanner</string>
+    <string name="app_name">QR Craft</string>
 
     <string name="permission_camera_heading">Camera Required</string>
     <string name="permission_camera_message">This app cannot function wit hout camera access. To scan QR codes, please grant permission.</string>

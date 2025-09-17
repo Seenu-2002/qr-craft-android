@@ -51,7 +51,7 @@ import com.seenu.dev.android.qr_craft.presentation.design_system.components.Cust
 import com.seenu.dev.android.qr_craft.presentation.design_system.LocalDimen
 import com.seenu.dev.android.qr_craft.presentation.mapper.toUiModel
 import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
-import com.seenu.dev.android.qr_craft.presentation.misc.QrGenerator
+import com.seenu.dev.android.qr_craft.framework.qr.QrGenerator
 import com.seenu.dev.android.qr_craft.presentation.scan_details.components.QrDetailsContent
 import com.seenu.dev.android.qr_craft.presentation.state.getTitleRes
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.onOverlay

@@ -1,6 +1,5 @@
 package com.seenu.dev.android.qr_craft.presentation.scan_details
 
-import android.R.attr.data
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.seenu.dev.android.qr_craft.domain.model.QrData
@@ -32,7 +31,7 @@ class QrDetailViewModel constructor(
                     }
                 }
             } catch (e: Exception) {
-                _qrData.value = UiState.Error(e.message)
+                _qrData.value = UiState.Error(e)
             }
 
         }

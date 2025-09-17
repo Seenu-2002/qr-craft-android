@@ -47,6 +47,7 @@
     <string name="qr_save_success">Image saved to Downloads!</string>
     <string name="qr_save_error">Unable to save image.</string>
     <string name="qr_save_not_supported">Saving not supported on this Android version</string>
+    <string name="no_qr_found">No QR-codes found</string>
 
     <string name="error_create_qr">Unable to create QR.</string>
     <string name="no_history">History is empty.</string>

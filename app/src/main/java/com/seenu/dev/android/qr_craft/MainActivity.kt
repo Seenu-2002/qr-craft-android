@@ -46,8 +46,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.seenu.dev.android.qr_craft.framework.image.ImageSaverFactory
 import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
-import com.seenu.dev.android.qr_craft.presentation.common.components.ScreenSlider
-import com.seenu.dev.android.qr_craft.presentation.common.components.ScreenSliderItem
+import com.seenu.dev.android.qr_craft.presentation.design_system.components.ScreenSlider
+import com.seenu.dev.android.qr_craft.presentation.design_system.components.ScreenSliderItem
 import com.seenu.dev.android.qr_craft.presentation.create.ChooseQrTypeScreen
 import com.seenu.dev.android.qr_craft.presentation.create.CreateQrScreen
 import com.seenu.dev.android.qr_craft.presentation.design_system.LocalDimen

@@ -1,5 +1,6 @@
 package com.seenu.dev.android.qr_craft.presentation.misc
 
+import android.graphics.Bitmap
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -55,9 +56,38 @@ class QRCodeAnalyzer constructor(
         }
     }
 
+    fun analyze(image: Bitmap) {
+        if (isProcessing || isPaused) {
+            return
+        }
+
+        isProcessing = true
+
+        scanner.process(image, 0)
+            .addOnSuccessListener { barcodes ->
+                if (barcodes.isEmpty()) {
+                    listener.onFailure(QRCodeNotFoundException())
+                }
+
+                for (barcode in barcodes) {
+                    barcode.rawValue?.let { qrContent ->
+                        listener.onSuccess(qrContent)
+                        return@addOnSuccessListener
+                    }
+                }
+                isProcessing = false
+            }
+            .addOnFailureListener {
+                isProcessing = false
+                listener.onFailure(it)
+            }
+    }
+
     interface ProcessListener {
         fun onSuccess(qrData: String)
         fun onFailure(exception: Exception)
     }
+
+    class QRCodeNotFoundException : Exception("No QR code found")
 
 }

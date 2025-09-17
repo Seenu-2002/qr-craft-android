@@ -1,11 +1,9 @@
 package com.seenu.dev.android.qr_craft.presentation.scanner
 
-import android.R.attr.data
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.seenu.dev.android.qr_craft.domain.model.QrData
 import com.seenu.dev.android.qr_craft.domain.repository.QrRepository
-import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
 import com.seenu.dev.android.qr_craft.presentation.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +14,6 @@ import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 class QrScannerViewModel constructor(
     private val qrRepository: QrRepository
@@ -43,6 +40,15 @@ class QrScannerViewModel constructor(
             )
             val id = qrRepository.insertQrData(qrData)
             _qrData.emit(UiState.Success(qrData.copy(id = id)))
+        }
+    }
+
+    fun throwQrAnalyzeError(exception: Exception) {
+        viewModelScope.launch {
+            _qrData.emit(UiState.Loading())
+            delay(500L) // Intentional delay
+            Timber.e(exception, "QR Analyze error")
+            _qrData.emit(UiState.Error(exception))
         }
     }
 

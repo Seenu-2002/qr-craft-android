@@ -47,7 +47,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.seenu.dev.android.qr_craft.R
 import com.seenu.dev.android.qr_craft.presentation.UiState
-import com.seenu.dev.android.qr_craft.presentation.common.components.CustomSnackBar
+import com.seenu.dev.android.qr_craft.presentation.design_system.components.CustomSnackBar
 import com.seenu.dev.android.qr_craft.presentation.design_system.LocalDimen
 import com.seenu.dev.android.qr_craft.presentation.mapper.toUiModel
 import com.seenu.dev.android.qr_craft.presentation.state.QrDataUiModel
@@ -60,7 +60,6 @@ import com.seenu.dev.android.qr_craft.presentation.ui.theme.success
 import com.seenu.dev.android.qr_craft.presentation.ui.theme.surfaceHigher
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -233,7 +232,7 @@ fun QrDetailsScreen(
 
                 is UiState.Error -> {
                     Text(
-                        text = state.message ?: "Unknown Error",
+                        text = state.exp?.message ?: "Unknown Error",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.error
                     )

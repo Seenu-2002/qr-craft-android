@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.seenu.dev.android.qr_craft.R
 import com.seenu.dev.android.qr_craft.presentation.UiState
-import com.seenu.dev.android.qr_craft.presentation.common.ProgressDialog
+import com.seenu.dev.android.qr_craft.presentation.design_system.components.ProgressDialog
 import com.seenu.dev.android.qr_craft.presentation.create.components.CreateQrForm
 import com.seenu.dev.android.qr_craft.presentation.design_system.LocalDimen
 import com.seenu.dev.android.qr_craft.presentation.state.QrType
@@ -124,7 +124,7 @@ fun CreateQrScreen(
                         Toast.LENGTH_LONG
                     )
                         .show()
-                    Timber.e("Error creating QR: ${state.message}")
+                    Timber.e("Error creating QR: ${state.exp?.message}")
                 }
             }
         }

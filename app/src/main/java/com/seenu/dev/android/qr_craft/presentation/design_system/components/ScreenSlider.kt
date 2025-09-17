@@ -1,23 +1,15 @@
-package com.seenu.dev.android.qr_craft.presentation.common.components
+package com.seenu.dev.android.qr_craft.presentation.design_system.components
 
-import android.R.attr.animationDuration
-import android.R.attr.contentDescription
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,16 +19,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.seenu.dev.android.qr_craft.R
@@ -48,15 +38,15 @@ import com.seenu.dev.android.qr_craft.presentation.ui.theme.surfaceHigher
 private fun ScreenSliderPreview() {
     val items = listOf(
         ScreenSliderItem(
-            icon = androidx.compose.ui.res.painterResource(id = R.drawable.ic_clock_refresh),
+            icon = painterResource(id = R.drawable.ic_clock_refresh),
             contentDescription = "Camera"
         ),
         ScreenSliderItem(
-            icon = androidx.compose.ui.res.painterResource(id = R.drawable.ic_scan),
+            icon = painterResource(id = R.drawable.ic_scan),
             contentDescription = "Compass"
         ),
         ScreenSliderItem(
-            icon = androidx.compose.ui.res.painterResource(id = R.drawable.ic_plus_circle),
+            icon = painterResource(id = R.drawable.ic_plus_circle),
             contentDescription = "Directions"
         )
     )

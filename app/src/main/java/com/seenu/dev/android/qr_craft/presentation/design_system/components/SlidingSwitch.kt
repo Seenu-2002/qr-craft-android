@@ -1,4 +1,4 @@
-package com.seenu.dev.android.qr_craft.presentation.common.components
+package com.seenu.dev.android.qr_craft.presentation.design_system.components
 
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.animation.core.tween

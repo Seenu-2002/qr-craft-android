@@ -37,7 +37,7 @@ class CreateQrViewModel constructor(
                 val id = qrRepository.insertQrData(qrData)
                 _qrData.value = UiState.Success(qrData.copy(id = id))
             } catch (e: Exception) {
-                _qrData.value = UiState.Error(e.message)
+                _qrData.value = UiState.Error(e)
             }
         }
     }

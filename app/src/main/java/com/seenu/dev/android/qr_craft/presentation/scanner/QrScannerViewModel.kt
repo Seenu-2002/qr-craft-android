@@ -52,4 +52,10 @@ class QrScannerViewModel constructor(
         }
     }
 
+    fun resetState() {
+        viewModelScope.launch {
+            _qrData.emit(UiState.Empty())
+        }
+    }
+
 }

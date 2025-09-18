@@ -122,9 +122,9 @@ This project is licensed under the [MIT License](https://opensource.org/licenses
 
 ## ✨ Acknowledgements
 
-[Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning)
-[ZXing](https://github.com/zxing/zxing)
-[CameraX](https://developer.android.com/training/camerax)
-[Timber](https://github.com/JakeWharton/timber)
-[Room DB](https://developer.android.com/jetpack/androidx/releases/room)
-[Koin](https://github.com/InsertKoinIO/koin)
+- [Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning)
+- [ZXing](https://github.com/zxing/zxing)
+- [CameraX](https://developer.android.com/training/camerax)
+- [Timber](https://github.com/JakeWharton/timber)
+- [Room DB](https://developer.android.com/jetpack/androidx/releases/room)
+- [Koin](https://github.com/InsertKoinIO/koin)

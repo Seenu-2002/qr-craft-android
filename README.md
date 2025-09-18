@@ -1,5 +1,7 @@
 # 📱 QR Craft
 
+![Social Icon](assets/social-icon.png)
+
 QR Craft is a modern Android application designed for **scanning, generating, and managing QR codes** with a smooth, camera-first experience.  
 It provides a rich set of utilities including real-time QR scanning, code generation, history management, favorites, and image saving — all wrapped in a clean and adaptive UI.
 

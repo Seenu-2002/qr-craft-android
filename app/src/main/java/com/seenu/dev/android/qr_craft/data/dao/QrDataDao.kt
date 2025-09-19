@@ -19,7 +19,7 @@ interface QrDataDao {
     @Query("SELECT * FROM qr_data ORDER BY created_at DESC")
     fun getAllQrData(): Flow<List<QrDataEntity>>
 
-    @Query("SELECT * FROM qr_data WHERE is_scanned = :isScanned ORDER BY created_at DESC")
+    @Query("SELECT * FROM qr_data WHERE is_scanned = :isScanned ORDER BY is_favourite DESC, created_at DESC")
     fun getAllQrData(isScanned: Boolean): Flow<List<QrDataEntity>>
 
     @Query("SELECT * FROM qr_data WHERE id = :id")

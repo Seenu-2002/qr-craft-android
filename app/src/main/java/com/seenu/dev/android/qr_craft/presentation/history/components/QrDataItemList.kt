@@ -102,7 +102,13 @@ fun QrDataItemList(
                     listSize = it.size
                 }
         ) {
-            items(qrItems.size + 1) { index ->
+            items(key = { index ->
+                if (index == qrItems.size) {
+                    -1 // Negative id for the extra spacer item
+                } else {
+                    qrItems[index].id
+                }
+            }, count = qrItems.size + 1) { index ->
 
                 // Empty box to provide spacing at the end of the list
                 if (index == qrItems.size) {
@@ -117,17 +123,7 @@ fun QrDataItemList(
                 val item = qrItems[index]
                 QrDataItem(
                     modifier = Modifier
-                        .animateItem(
-                            fadeOutSpec = spring(
-                                stiffness = Spring.StiffnessLow,
-                                dampingRatio = Spring.DampingRatioLowBouncy,
-                            ),
-                            placementSpec = spring(
-                                dampingRatio = Spring.DampingRatioLowBouncy,
-                                stiffness = Spring.StiffnessLow,
-                                visibilityThreshold = IntOffset.VisibilityThreshold,
-                            )
-                        )
+                        .animateItem()
                         .padding(vertical = 4.dp)
                         .pointerInput(Unit) {
                             detectTapGestures(onTap = {
